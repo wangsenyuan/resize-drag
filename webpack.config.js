@@ -6,8 +6,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-const assets_dir = process.env.ASSETS_DIR || "maycur";
-const html_title = process.env.HTML_TITLE || "每刻打印服务";
+const assets_dir = process.env.ASSETS_DIR;
+const html_title = process.env.HTML_TITLE;
 const isProd = process.env.NODE_ENV.indexOf("local") === -1;
 const cdn = process.env.CDN || "";
 // const cdn = ''
@@ -21,7 +21,6 @@ let config = {
   entry: {
     main: path.resolve(__dirname, "./src/index.js"),
   },
-  target: ["web", "es5"],
   output: {
     path: path.join(__dirname, "dist"),
     filename: "bundle.[chunkhash].js",

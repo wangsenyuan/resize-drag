@@ -1,5 +1,5 @@
 {
-  "name": "auth-front",
+  "name": "print-demo",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -51,13 +51,6 @@
   "scripts": {
     "precommit": "lint-staged",
     "start": "cross-env NODE_ENV=local webpack serve",
-    "team2": "rm -rf dist && env NODE_ENV=team2 CDN='//cdn-authteam2.maycur.com/' webpack",
-    "dev": "rm -rf dist && env NODE_ENV=dev webpack",
-    "uat": "rm -rf dist && env NODE_ENV=uat webpack",
-    "prod": "rm -rf dist && env NODE_ENV=production CDN='//cdn-auth.maycur.com/' webpack",
-    "bondev": "rm -rf dist && env HTML_TITLE='报销管理-登录' ASSETS_DIR=nbcb NODE_ENV=bondev webpack",
-    "bonuat": "rm -rf dist && env HTML_TITLE='报销管理-登录' ASSETS_DIR=nbcb NODE_ENV=bonuat webpack",
-    "bonprod": "rm -rf dist && env HTML_TITLE='报销管理-登录' ASSETS_DIR=nbcb NODE_ENV=bonprod webpack"
   },
   "browserslist": [
     "last 3 versions"

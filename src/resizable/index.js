@@ -1,7 +1,7 @@
-import React, { useCallback, useMemo } from "react";
-import { ResizeContext } from "./context";
+import React, { useCallback, useMemo, useState } from "react";
+import { ResizeContext, RowsContext, ColumnsContext } from "./context";
 import ResizableElem from "./elem";
-
+import Background from "./background";
 const wrapResizable = (layouts, onResize, children) => {
   return (
     <ResizeContext.Provider
@@ -27,9 +27,21 @@ const renderChildren = (children, layouts, onResize) => {
   return children.map((child) => wrapResizable(layouts, onResize, child));
 };
 
+const renderBackground = (rows, onChangeRows, cols, onChangeCols) => {
+  return (
+    <ColumnsContext.Provider value={{ onChangeColumns: onChangeCols }}>
+      <RowsContext.Provider value={{ onChangeRows }}>
+        <Background rows={rows} cols={cols} />
+      </RowsContext.Provider>
+    </ColumnsContext.Provider>
+  );
+};
+
 const ResizableGrid = ({
   className,
   layouts,
+  rows,
+  cols,
   onLayoutChange,
   children,
   style,
@@ -46,9 +58,14 @@ const ResizableGrid = ({
     [onLayoutChange, layouts]
   );
 
+  const [rowsState, setRows] = useState(rows);
+
+  const [colsState, setCols] = useState(cols);
+
   return (
     <div className={`${className} resizable-grid`} style={style} {...rest}>
-      {renderChildren(children, layouts, onResize)}
+      {renderBackground(rowsState, setRows, colsState, setCols)}
+      {/* {renderChildren(children, layouts, onResize)} */}
     </div>
   );
 };

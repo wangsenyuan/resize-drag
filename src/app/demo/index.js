@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import ResizableGrid from "@/resizable";
 
@@ -7,12 +7,33 @@ const initLayout = {
   second: { top: 300, left: 500, width: 200, height: 150 },
 };
 
+const initRows = (count) => {
+  let height = 50;
+  let res = [];
+  for (let i = 0; i < count; i++) {
+    res.push({ height });
+  }
+  return res;
+};
+
+const initCols = (count) => {
+  let width = 100;
+  let res = [];
+  for (let i = 0; i < count; i++) {
+    res.push({ width });
+  }
+  return res;
+};
+
 const Page = () => {
   const [layout, setLayout] = useState(initLayout);
-
+  const rows = useMemo(() => initRows(10), []);
+  const cols = useMemo(() => initCols(26), []);
   return (
     <ResizableGrid
       layouts={layout}
+      rows={rows}
+      cols={cols}
       onLayoutChange={setLayout}
       style={{ width: "800px", height: "600px", position: "relative" }}
     >

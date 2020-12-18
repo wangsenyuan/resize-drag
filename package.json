@@ -50,7 +50,7 @@
   },
   "scripts": {
     "precommit": "lint-staged",
-    "start": "cross-env NODE_ENV=local webpack serve",
+    "start": "cross-env NODE_ENV=local webpack serve"
   },
   "browserslist": [
     "last 3 versions"

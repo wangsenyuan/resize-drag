@@ -1,0 +1,35 @@
+@import '../../css-variables.scss';
+
+div.grid-row {
+  &.grid-cell {
+    border: 1px solid $border-color;
+    border-bottom: none;
+    text-align: center;
+    border-collapse: collapse;
+
+    .grid-row-label {
+      height: calc(100% - 1px);
+    }
+
+    position: relative;
+
+    div.grid-row-bottom-line {
+      // background-color: red;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: $moving-holder-gap;
+      z-index: 1;
+      border-bottom: 1px solid $border-color;
+
+      &:hover {
+        cursor: row-resize;
+      }
+
+      &.moving {
+        background-color: $moving-holder-background-color;
+      }
+    }
+  }
+}

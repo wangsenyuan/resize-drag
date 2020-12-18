@@ -1,0 +1,32 @@
+@import '../../css-variables.scss';
+
+div.columns-container {
+  display: flex;
+  flex-wrap: nowrap;
+
+  &>* {
+    flex: 0 0 auto;
+
+    &.grid-cell {
+      border: 1px solid $border-color;
+      border-left: none;
+      text-align: center;
+      border-collapse: collapse;
+      position: relative;
+
+      .grid-column-right-border {
+        position: absolute;
+        height: 100%;
+        width: $moving-holder-gap;
+        z-index: 1;
+        top: 0;
+        right: 0;
+
+        &:hover {
+          cursor: col-resize;
+          background-color: $moving-holder-background-color;
+        }
+      }
+    }
+  }
+}

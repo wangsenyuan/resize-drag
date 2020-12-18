@@ -1,13 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./index.scss";
 import { useResize } from "../context";
-
-function max(a, b) {
-  if (a >= b) {
-    return a;
-  }
-  return b;
-}
+import { max, px } from "../utils";
 
 function makeResizer(rect, resizerRef, onChange, onResize) {
   if (!resizerRef.current) {
@@ -94,8 +88,6 @@ const getRect = (resize) => {
   const height = resize?.height || 100;
   return { top, left, width, height };
 };
-
-const px = (value) => `${value}px`;
 
 const workWithOnResize = (fn, onChange) => {
   return (rect, current) => {

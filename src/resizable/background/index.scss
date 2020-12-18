@@ -1,0 +1,12 @@
+@import '../css-variables.scss';
+
+div.resizable-grid-background {
+  div.background {
+    border-collapse: collapse;
+    position: relative;
+
+    .top-left-corner {
+      border: 1px solid $border-color;
+    }
+  }
+}

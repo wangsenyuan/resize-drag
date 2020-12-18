@@ -3,19 +3,22 @@ import "./index.scss";
 import { useColumns } from "../../context";
 import { px, max } from "../../utils";
 
-function makeDragable(divRef, width, onMove, setMoving, onChange) {
+function makeDragable(divRef, width, onMove, setMoving, onChange, label) {
   if (!divRef.current) {
     return;
   }
+  console.log("makeDragable (" + label + ")");
   let div = divRef.current;
   let left = 0;
 
-  div.addEventListener("mousedown", function (evt) {
+  function startMove(evt) {
     left = evt.pageX - width;
     setMoving(true);
     window.addEventListener("mousemove", changeWidth);
     window.addEventListener("mouseup", stopChange);
-  });
+    console.log("bottom line mouse down event");
+  }
+  div.addEventListener("mousedown", startMove);
 
   function changeWidth(evt) {
     width = parseInt(max(10, evt.pageX - left));
@@ -23,20 +26,34 @@ function makeDragable(divRef, width, onMove, setMoving, onChange) {
   }
 
   function stopChange() {
+    console.log("stopChange called (" + label + ")");
     window.removeEventListener("mousemove", changeWidth);
     window.removeEventListener("mouseup", stopChange);
-    onChange && onChange(width);
+    onChange?.(width);
     setMoving(false);
   }
+
+  return () => {
+    window.removeEventListener("mousemove", changeWidth);
+    window.removeEventListener("mouseup", stopChange);
+    div.removeEventListener("mousedown", startMove);
+  };
 }
 
-const Column = ({ column, label, height, onChange }) => {
+const Column = ({ index, column, label, height, onChange }) => {
   const ref = useRef(null);
   const [width, setWidth] = useState(column.width);
   const [moving, setMoving] = useState(false);
 
   useEffect(() => {
-    makeDragable(ref, column.width, setWidth, setMoving, onChange);
+    return makeDragable(
+      ref,
+      column.width,
+      setWidth,
+      setMoving,
+      (width) => onChange(index, width),
+      label
+    );
   }, [ref, column.width, onChange, setWidth, setMoving]);
 
   return (
@@ -94,7 +111,8 @@ const Page = ({ left, width, height, columns }) => {
             column={col}
             label={getLabel(index)}
             height={height}
-            onChange={(width) => onChangeColumnWidth(index, width)}
+            index={index}
+            onChange={onChangeColumnWidth}
           />
         );
       })}

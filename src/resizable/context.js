@@ -17,3 +17,9 @@ export const ColumnsContext = React.createContext({});
 export function useColumns() {
   return useContext(ColumnsContext);
 }
+
+export const SvgMovingContext = React.createContext({});
+
+export function useSvgMoving() {
+  return useContext(SvgMovingContext);
+}

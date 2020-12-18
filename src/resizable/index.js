@@ -2,6 +2,8 @@ import React, { useCallback, useMemo, useState } from "react";
 import { ResizeContext, RowsContext, ColumnsContext } from "./context";
 import ResizableElem from "./elem";
 import Background from "./background";
+import "./index.scss";
+
 const wrapResizable = (layouts, onResize, children) => {
   return (
     <ResizeContext.Provider

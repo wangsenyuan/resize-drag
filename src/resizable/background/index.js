@@ -1,8 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import "./index.scss";
 import { px, last } from "../utils";
 import Rows from "./rows";
 import Columns from "./columns";
+import Content from "./content";
+import { SvgMovingContext } from "../context";
 
 const partialSum = (initValue, nums) => {
   let res = [initValue, ...nums];
@@ -14,6 +16,8 @@ const partialSum = (initValue, nums) => {
 
 const initWidth = 50;
 const initHeight = 50;
+
+const initMovingState = { dir: "vertical", x: 0, y: 0 };
 
 // rows has height, cols has width
 const Page = ({ rows, cols }) => {
@@ -35,6 +39,8 @@ const Page = ({ rows, cols }) => {
     [cols]
   );
 
+  const [moving, setMoving] = useState(initMovingState);
+
   return (
     <div
       className="resizable-grid-background"
@@ -44,22 +50,35 @@ const Page = ({ rows, cols }) => {
         height: px(last(prefRowHeights) + initHeight),
       }}
     >
-      <div
-        className="background"
-        style={{ position: "relative", width: "100%", height: "100%" }}
+      <SvgMovingContext.Provider
+        value={{ currentMove: moving, onCurrentMove: setMoving }}
       >
         <div
-          className="top-left-corner grid-cell"
-          style={{ width: px(initWidth), height: px(initHeight) }}
-        ></div>
-        <Columns
-          left={initWidth}
-          width={last(prefColWidths)}
-          height={initHeight}
-          columns={cols}
-        />
-        <Rows width={initWidth} rows={rows} height={last(prefRowHeights)} />
-      </div>
+          className="background"
+          style={{ position: "relative", width: "100%", height: "100%" }}
+        >
+          <div
+            className="top-left-corner grid-cell"
+            style={{ width: px(initWidth), height: px(initHeight) }}
+          ></div>
+          <Columns
+            left={initWidth}
+            width={last(prefColWidths)}
+            height={initHeight}
+            columns={cols}
+          />
+          <Rows width={initWidth} rows={rows} height={last(prefRowHeights)} />
+
+          <Content
+            rows={rows}
+            cols={cols}
+            width={last(prefColWidths)}
+            height={last(prefRowHeights)}
+            top={initHeight}
+            left={initWidth}
+          />
+        </div>
+      </SvgMovingContext.Provider>
     </div>
   );
 };

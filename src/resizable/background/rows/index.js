@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { px, max } from "../../utils";
 import "./index.scss";
-import { useRows } from "../../context";
+import { useRows, useSvgMoving } from "../../context";
 import useWhyDidYouUpdate from "@/hooks/why-did-update";
 
 function makeDragable(divRef, height, onMove, setMoving, onChange, label) {
@@ -23,7 +23,7 @@ function makeDragable(divRef, height, onMove, setMoving, onChange, label) {
 
   function changeWidth(evt) {
     height = parseInt(max(10, evt.pageY - top));
-    onMove(height);
+    onMove(height, { x: evt.pageX, y: evt.pageY });
   }
 
   function stopChange() {
@@ -47,17 +47,35 @@ const Row = ({ width, row, label, onChange, index }) => {
   const [height, setHeight] = useState(row.height);
   const [moving, setMoving] = useState(false);
 
+  const { onCurrentMove } = useSvgMoving();
+
+  const wrapMove = useCallback(
+    (height, current) => {
+      onCurrentMove?.({ dir: "horizontal", ...current });
+      setHeight(height);
+    },
+    [onCurrentMove, setHeight]
+  );
+
+  const wrapChange = useCallback(
+    (height) => {
+      onChange?.(index, height);
+      onCurrentMove(null);
+    },
+    [onChange, onCurrentMove, index]
+  );
+
   useEffect(() => {
     let clean = makeDragable(
       ref,
       row.height,
-      setHeight,
+      wrapMove,
       setMoving,
-      (height) => onChange(index, height),
+      wrapChange,
       label
     );
     return clean;
-  }, [ref, row.height, setHeight, setMoving, onChange, index]);
+  }, [ref, row.height, wrapMove, setMoving, wrapChange, index]);
 
   return (
     <div

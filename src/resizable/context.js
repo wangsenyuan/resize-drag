@@ -1,11 +1,5 @@
 import React, { useContext } from "react";
 
-export const ResizeContext = React.createContext({});
-
-export function useResize() {
-  return useContext(ResizeContext);
-}
-
 export const RowsContext = React.createContext({});
 
 export function useRows() {
@@ -28,16 +22,4 @@ export const ViewBoxContext = React.createContext({});
 
 export function useViewBox() {
   return useContext(ViewBoxContext);
-}
-
-export const CollisionContext = React.createContext({});
-
-export function useCollision() {
-  return useContext(CollisionContext);
-}
-
-export const DropAreaContext = React.createContext({});
-
-export function useDropArea() {
-  return useContext(DropAreaContext);
 }

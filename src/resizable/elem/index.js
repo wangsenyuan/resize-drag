@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./index.scss";
-import { useResize, useViewBox } from "../context";
+import { useViewBox } from "../context";
 import { max, px } from "../utils";
 
 function makeResizer(rect, resizerRef, onChange, onResize) {
@@ -90,7 +90,6 @@ function moveBottomRight(rect, current) {
 }
 
 const getRect = (resize) => {
-  // console.log("getRect(" + JSON.stringify(resize) + ")");
   const top = resize?.top || 0;
   const left = resize?.left || 0;
 
@@ -124,10 +123,10 @@ const wrapByViewBox = (fn, viewBox) => {
 };
 
 const Elem = ({ children }) => {
-  const { resize, onResize } = useResize();
+  const { viewBox, canReach, getResize, onResize } = useViewBox();
+  const resize = getResize(children.key);
   const initRect = useRef(getRect(resize));
   const [rect, setRect] = useState(resize);
-  const { viewBox, canReach } = useViewBox();
 
   const topLeft = useRef(null);
   const topRight = useRef(null);

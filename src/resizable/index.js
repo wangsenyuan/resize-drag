@@ -1,30 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  ResizeContext,
-  RowsContext,
-  ColumnsContext,
-  ViewBoxContext,
-} from "./context";
+import React, { useMemo, useState } from "react";
+import { RowsContext, ColumnsContext, ViewBoxContext } from "./context";
 import ResizableElem from "./elem";
 import Background from "./background";
 import "./index.scss";
-import { binarySearch, last, px, logWhenChange } from "./utils";
-
-import { useWhyDidYouUpdate } from "@/hooks/why-did-update";
+import { binarySearch, last, px } from "./utils";
 
 const initWidth = 50;
 const initHeight = 50;
 
-const ResizableElementWrapper = ({ resize, onResize, children }) => {
-  logWhenChange("onResize in ResizableElementWrapper", onResize);
-  return (
-    <ResizeContext.Provider value={{ resize, onResize }}>
-      <ResizableElem>{children}</ResizableElem>
-    </ResizeContext.Provider>
-  );
-};
-
-const renderChildren = (children, layouts, onResize) => {
+const renderChildren = (children) => {
   if (!children) {
     return null;
   }
@@ -33,13 +17,7 @@ const renderChildren = (children, layouts, onResize) => {
   }
 
   return children.map((child) => (
-    <ResizableElementWrapper
-      resize={layouts[child.key]}
-      onResize={onResize}
-      key={child.key}
-    >
-      {child}
-    </ResizableElementWrapper>
+    <ResizableElem key={child.key}>{child}</ResizableElem>
   ));
 };
 
@@ -108,9 +86,6 @@ const checkResize = (rowHeights, colWidths, resize) => {
       j--;
     }
   }
-
-  console.log(`find horizontal indexes ${i} ${ii}`);
-  console.log(`find vertical indexes ${j} ${jj}`);
   x1 = colWidths[i];
   y1 = rowHeights[j];
   x2 = colWidths[ii];
@@ -188,21 +163,25 @@ const ResizableGrid = ({
 
     const canReach = createCanReach(prefRowHeights, prefColWidths, layouts);
 
-    return { viewBox, canReach };
-  }, [initWidth, initHeight, layouts, prefColWidths, prefRowHeights]);
-
-  const onResize = useCallback(
-    (key, resize) => {
+    const onResize = (key, resize) => {
       resize = checkResize(prefRowHeights, prefColWidths, resize);
       let newLayouts = Object.assign({}, layouts);
       newLayouts[key] = resize;
       onLayoutChange(newLayouts);
       return resize;
-    },
-    [onLayoutChange, layouts, prefColWidths, prefRowHeights]
-  );
+    };
 
-  // logWhenChange("onResize", onResize);
+    const getResize = (key) => layouts[key];
+
+    return { viewBox, canReach, onResize, getResize };
+  }, [
+    initWidth,
+    initHeight,
+    layouts,
+    prefColWidths,
+    prefRowHeights,
+    onLayoutChange,
+  ]);
 
   return (
     <div
@@ -230,7 +209,7 @@ const ResizableGrid = ({
       >
         <ViewBoxContext.Provider value={gridViewBox}>
           <div className="resizable-grid">
-            {renderChildren(children, layouts, onResize)}
+            {renderChildren(children, layouts)}
           </div>
         </ViewBoxContext.Provider>
       </div>
@@ -238,9 +217,4 @@ const ResizableGrid = ({
   );
 };
 
-const WrapGrid = (props) => {
-  useWhyDidYouUpdate("grid", props);
-  return <ResizableGrid {...props} />;
-};
-
-export default WrapGrid;
+export default ResizableGrid;

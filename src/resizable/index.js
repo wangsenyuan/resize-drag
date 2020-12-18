@@ -127,8 +127,6 @@ function overlap(rect1, rect2) {
   let { x1, y1, x2, y2 } = getCoordinates(rect1);
   let { x1: u1, y1: v1, x2: u2, y2: v2 } = getCoordinates(rect2);
 
-  console.log(`checking ${x1} ${y1} ${x2} ${y2} <==> ${u1} ${v1} ${u2} ${v2}`);
-
   return u1 < x2 && v1 < y2 && x1 < u2 && y1 < v2;
 }
 
@@ -144,7 +142,6 @@ const createCanReach = (rowHeights, colWidths, layouts) => {
         return false;
       }
     }
-    console.log("not overlap with others");
     return true;
   }
 

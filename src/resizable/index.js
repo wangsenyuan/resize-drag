@@ -85,8 +85,8 @@ const checkResize = (rowHeights, colWidths, resize) => {
   let x2 = parseInt(x1 + width);
   let y2 = parseInt(y1 + height);
 
-  let i = binarySearch(colWidths.length, (i) => colWidths[i] > x1) - 1;
-  let j = binarySearch(rowHeights.length, (j) => rowHeights[j] > y1) - 1;
+  let i = binarySearch(colWidths.length, (i) => colWidths[i] >= x1);
+  let j = binarySearch(rowHeights.length, (j) => rowHeights[j] >= y1);
   let ii = binarySearch(colWidths.length, (ii) => colWidths[ii] > x2) - 1;
   let jj = binarySearch(rowHeights.length, (jj) => rowHeights[jj] > y2) - 1;
 

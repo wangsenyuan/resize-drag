@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 export function max(a, b) {
   if (a >= b) {
     return a;
@@ -26,4 +28,10 @@ export function binarySearch(n, fn) {
     }
   }
   return right;
+}
+
+export function logWhenChange(label, obj) {
+  useEffect(() => {
+    console.log(`${label} changed`);
+  }, [obj]);
 }

@@ -135,25 +135,25 @@ const Elem = ({ children }) => {
       initRect,
       topLeft,
       workWithOnChange(wrapByViewBox(moveTopLeft, viewBox), setRect),
-      onResize
+      (resize) => onResize(children.key, resize)
     );
     let clean2 = makeResizer(
       initRect,
       topRight,
       workWithOnChange(wrapByViewBox(moveTopRight, viewBox), setRect),
-      onResize
+      (resize) => onResize(children.key, resize)
     );
     let clean3 = makeResizer(
       initRect,
       bottomLeft,
       workWithOnChange(wrapByViewBox(moveBottomLeft, viewBox), setRect),
-      onResize
+      (resize) => onResize(children.key, resize)
     );
     let clean4 = makeResizer(
       initRect,
       bottomRight,
       workWithOnChange(wrapByViewBox(moveBottomRight, viewBox), setRect),
-      onResize
+      (resize) => onResize(children.key, resize)
     );
     return () => {
       clean1();
@@ -161,7 +161,16 @@ const Elem = ({ children }) => {
       clean3();
       clean4();
     };
-  }, [initRect, topLeft, topRight, bottomLeft, bottomLeft, viewBox]);
+  }, [
+    initRect,
+    topLeft,
+    topRight,
+    bottomLeft,
+    bottomLeft,
+    viewBox,
+    children.key,
+    onResize,
+  ]);
 
   return (
     <div

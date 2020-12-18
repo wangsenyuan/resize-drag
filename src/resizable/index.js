@@ -8,19 +8,17 @@ import {
 import ResizableElem from "./elem";
 import Background from "./background";
 import "./index.scss";
-import { binarySearch, last, px } from "./utils";
+import { binarySearch, last, px, logWhenChange } from "./utils";
+
+import { useWhyDidYouUpdate } from "@/hooks/why-did-update";
 
 const initWidth = 50;
 const initHeight = 50;
-const wrapResizable = (layouts, onResize, children) => {
+
+const ResizableElementWrapper = ({ resize, onResize, children }) => {
+  logWhenChange("onResize in ResizableElementWrapper", onResize);
   return (
-    <ResizeContext.Provider
-      key={children.key}
-      value={{
-        resize: layouts[children.key],
-        onResize: (layout) => onResize(children.key, layout),
-      }}
-    >
+    <ResizeContext.Provider value={{ resize, onResize }}>
       <ResizableElem>{children}</ResizableElem>
     </ResizeContext.Provider>
   );
@@ -31,10 +29,18 @@ const renderChildren = (children, layouts, onResize) => {
     return null;
   }
   if (!Array.isArray(children)) {
-    return wrapResizable(layouts, onResize, children);
+    children = [children];
   }
 
-  return children.map((child) => wrapResizable(layouts, onResize, child));
+  return children.map((child) => (
+    <ResizableElementWrapper
+      resize={layouts[child.key]}
+      onResize={onResize}
+      key={child.key}
+    >
+      {child}
+    </ResizableElementWrapper>
+  ));
 };
 
 const renderBackground = (
@@ -70,6 +76,8 @@ const partialSum = (initValue, nums) => {
 };
 
 const checkResize = (rowHeights, colWidths, resize) => {
+  console.table(rowHeights);
+  console.table(colWidths);
   let { top, left, width, height } = resize;
 
   let x1 = parseInt(left);
@@ -155,7 +163,7 @@ const ResizableGrid = ({
 
   const onResize = useCallback(
     (key, resize) => {
-      console.log("get resize => " + JSON.stringify(resize));
+      // console.log("get resize => " + JSON.stringify(resize));
       resize = checkResize(prefRowHeights, prefColWidths, resize);
       let newLayouts = Object.assign({}, layouts);
       newLayouts[key] = resize;
@@ -164,6 +172,8 @@ const ResizableGrid = ({
     },
     [onLayoutChange, layouts, prefColWidths, prefRowHeights]
   );
+
+  logWhenChange("onResize", onResize);
 
   return (
     <div
@@ -199,4 +209,9 @@ const ResizableGrid = ({
   );
 };
 
-export default ResizableGrid;
+const WrapGrid = (props) => {
+  useWhyDidYouUpdate("grid", props);
+  return <ResizableGrid {...props} />;
+};
+
+export default WrapGrid;

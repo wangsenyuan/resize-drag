@@ -99,12 +99,16 @@ const getRect = (resize) => {
   return { top, left, width, height };
 };
 
-const workWithOnChange = (fn, onChange) => {
+const workWithOnChange = (key, fn, check, onChange) => {
   return (rect, current) => {
+    let newRect = rect;
     if (current) {
-      rect = fn(rect, current);
+      newRect = fn(rect, current);
     }
-    onChange(rect);
+    if (check?.(key, newRect)) {
+      onChange(rect);
+      return newRect;
+    }
     return rect;
   };
 };
@@ -123,7 +127,7 @@ const Elem = ({ children }) => {
   const { resize, onResize } = useResize();
   const initRect = useRef(getRect(resize));
   const [rect, setRect] = useState(resize);
-  const { viewBox } = useViewBox();
+  const { viewBox, canReach } = useViewBox();
 
   const topLeft = useRef(null);
   const topRight = useRef(null);
@@ -134,25 +138,45 @@ const Elem = ({ children }) => {
     let clean1 = makeResizer(
       initRect,
       topLeft,
-      workWithOnChange(wrapByViewBox(moveTopLeft, viewBox), setRect),
+      workWithOnChange(
+        children.key,
+        wrapByViewBox(moveTopLeft, viewBox),
+        canReach,
+        setRect
+      ),
       (resize) => onResize(children.key, resize)
     );
     let clean2 = makeResizer(
       initRect,
       topRight,
-      workWithOnChange(wrapByViewBox(moveTopRight, viewBox), setRect),
+      workWithOnChange(
+        children.key,
+        wrapByViewBox(moveTopRight, viewBox),
+        canReach,
+        setRect
+      ),
       (resize) => onResize(children.key, resize)
     );
     let clean3 = makeResizer(
       initRect,
       bottomLeft,
-      workWithOnChange(wrapByViewBox(moveBottomLeft, viewBox), setRect),
+      workWithOnChange(
+        children.key,
+        wrapByViewBox(moveBottomLeft, viewBox),
+        canReach,
+        setRect
+      ),
       (resize) => onResize(children.key, resize)
     );
     let clean4 = makeResizer(
       initRect,
       bottomRight,
-      workWithOnChange(wrapByViewBox(moveBottomRight, viewBox), setRect),
+      workWithOnChange(
+        children.key,
+        wrapByViewBox(moveBottomRight, viewBox),
+        canReach,
+        setRect
+      ),
       (resize) => onResize(children.key, resize)
     );
     return () => {
@@ -168,6 +192,7 @@ const Elem = ({ children }) => {
     bottomLeft,
     bottomLeft,
     viewBox,
+    canReach,
     children.key,
     onResize,
   ]);

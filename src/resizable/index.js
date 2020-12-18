@@ -75,15 +75,18 @@ const partialSum = (initValue, nums) => {
   return res;
 };
 
-const checkResize = (rowHeights, colWidths, resize) => {
-  console.table(rowHeights);
-  console.table(colWidths);
-  let { top, left, width, height } = resize;
+function getCoordinates(rect) {
+  let { top, left, width, height } = rect;
 
   let x1 = parseInt(left);
   let y1 = parseInt(top);
   let x2 = parseInt(x1 + width);
   let y2 = parseInt(y1 + height);
+  return { x1, y1, x2, y2 };
+}
+
+const checkResize = (rowHeights, colWidths, resize) => {
+  let { x1, y1, x2, y2 } = getCoordinates(resize);
 
   let i = binarySearch(colWidths.length, (i) => colWidths[i] >= x1);
   let j = binarySearch(rowHeights.length, (j) => rowHeights[j] >= y1);
@@ -118,6 +121,34 @@ const checkResize = (rowHeights, colWidths, resize) => {
     width: x2 - x1,
     height: y2 - y1,
   });
+};
+
+function overlap(rect1, rect2) {
+  let { x1, y1, x2, y2 } = getCoordinates(rect1);
+  let { x1: u1, y1: v1, x2: u2, y2: v2 } = getCoordinates(rect2);
+
+  console.log(`checking ${x1} ${y1} ${x2} ${y2} <==> ${u1} ${v1} ${u2} ${v2}`);
+
+  return u1 < x2 && v1 < y2 && x1 < u2 && y1 < v2;
+}
+
+const createCanReach = (rowHeights, colWidths, layouts) => {
+  function canReach(key, resize) {
+    resize = checkResize(rowHeights, colWidths, resize);
+
+    for (let cur in layouts) {
+      if (cur === key) {
+        continue;
+      }
+      if (overlap(resize, layouts[cur])) {
+        return false;
+      }
+    }
+    console.log("not overlap with others");
+    return true;
+  }
+
+  return canReach;
 };
 
 const ResizableGrid = ({
@@ -158,12 +189,13 @@ const ResizableGrid = ({
       y: initHeight,
     };
 
-    return { viewBox };
-  }, [initWidth, initHeight]);
+    const canReach = createCanReach(prefRowHeights, prefColWidths, layouts);
+
+    return { viewBox, canReach };
+  }, [initWidth, initHeight, layouts, prefColWidths, prefRowHeights]);
 
   const onResize = useCallback(
     (key, resize) => {
-      // console.log("get resize => " + JSON.stringify(resize));
       resize = checkResize(prefRowHeights, prefColWidths, resize);
       let newLayouts = Object.assign({}, layouts);
       newLayouts[key] = resize;
@@ -173,7 +205,7 @@ const ResizableGrid = ({
     [onLayoutChange, layouts, prefColWidths, prefRowHeights]
   );
 
-  logWhenChange("onResize", onResize);
+  // logWhenChange("onResize", onResize);
 
   return (
     <div

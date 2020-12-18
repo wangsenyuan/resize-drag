@@ -29,3 +29,15 @@ export const ViewBoxContext = React.createContext({});
 export function useViewBox() {
   return useContext(ViewBoxContext);
 }
+
+export const CollisionContext = React.createContext({});
+
+export function useCollision() {
+  return useContext(CollisionContext);
+}
+
+export const DropAreaContext = React.createContext({});
+
+export function useDropArea() {
+  return useContext(DropAreaContext);
+}

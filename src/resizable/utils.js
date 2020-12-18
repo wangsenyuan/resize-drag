@@ -13,3 +13,17 @@ export const last = (arr) => {
   }
   return arr[arr.length - 1];
 };
+
+export function binarySearch(n, fn) {
+  let left = 0;
+  let right = n;
+  while (left < right) {
+    let mid = Math.floor((left + right) / 2);
+    if (fn(mid)) {
+      right = mid;
+    } else {
+      left = mid + 1;
+    }
+  }
+  return right;
+}

@@ -10,25 +10,35 @@ function makeResizer(rect, resizerRef, onChange, onResize) {
   console.log("making resizer");
   const element = resizerRef.current;
 
-  element.addEventListener("mousedown", function () {
+  function startResize() {
     window.addEventListener("mousemove", resize);
     window.addEventListener("mouseup", stopResize);
-  });
+  }
+
+  element.addEventListener("mousedown", startResize);
 
   function stopResize() {
-    onResize(rect.current);
+    let res = onResize(rect.current);
+    onChange(res);
+    rect.current = res;
     window.removeEventListener("mousemove", resize);
     window.removeEventListener("mouseup", stopResize);
   }
 
   function resize(evt) {
     let current = {
-      currentX: evt.pageX - evt.target.offsetLeft,
-      currentY: evt.pageY - evt.target.offsetTop,
+      currentX: evt.pageX,
+      currentY: evt.pageY,
     };
 
     rect.current = onChange(rect.current, current);
   }
+
+  return () => {
+    window.removeEventListener("mousemove", resize);
+    window.removeEventListener("mouseup", stopResize);
+    element.removeEventListener("mousedown", startResize);
+  };
 }
 
 function moveTopLeft(rect, current) {
@@ -89,11 +99,13 @@ const getRect = (resize) => {
   return { top, left, width, height };
 };
 
-const workWithOnResize = (fn, onChange) => {
+const workWithOnChange = (fn, onChange) => {
   return (rect, current) => {
-    let res = fn(rect, current);
-    onChange(res);
-    return res;
+    if (current) {
+      rect = fn(rect, current);
+    }
+    onChange(rect);
+    return rect;
   };
 };
 
@@ -119,30 +131,36 @@ const Elem = ({ children }) => {
   const bottomLeft = useRef(null);
 
   useEffect(() => {
-    makeResizer(
+    let clean1 = makeResizer(
       initRect,
       topLeft,
-      workWithOnResize(wrapByViewBox(moveTopLeft, viewBox), setRect),
+      workWithOnChange(wrapByViewBox(moveTopLeft, viewBox), setRect),
       onResize
     );
-    makeResizer(
+    let clean2 = makeResizer(
       initRect,
       topRight,
-      workWithOnResize(wrapByViewBox(moveTopRight, viewBox), setRect),
+      workWithOnChange(wrapByViewBox(moveTopRight, viewBox), setRect),
       onResize
     );
-    makeResizer(
+    let clean3 = makeResizer(
       initRect,
       bottomLeft,
-      workWithOnResize(wrapByViewBox(moveBottomLeft, viewBox), setRect),
+      workWithOnChange(wrapByViewBox(moveBottomLeft, viewBox), setRect),
       onResize
     );
-    makeResizer(
+    let clean4 = makeResizer(
       initRect,
       bottomRight,
-      workWithOnResize(wrapByViewBox(moveBottomRight, viewBox), setRect),
+      workWithOnChange(wrapByViewBox(moveBottomRight, viewBox), setRect),
       onResize
     );
+    return () => {
+      clean1();
+      clean2();
+      clean3();
+      clean4();
+    };
   }, [initRect, topLeft, topRight, bottomLeft, bottomLeft, viewBox]);
 
   return (
@@ -161,8 +179,8 @@ const Elem = ({ children }) => {
         <div className="resizer top-right" ref={topRight}></div>
         <div className="resizer bottom-left" ref={bottomLeft}></div>
         <div className="resizer bottom-right" ref={bottomRight}></div>
+        {children}
       </div>
-      {children}
     </div>
   );
 };

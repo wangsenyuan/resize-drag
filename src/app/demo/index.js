@@ -28,7 +28,7 @@ const initCols = (count) => {
 const Page = () => {
   const [layout, setLayout] = useState(initLayout);
   const rows = useMemo(() => initRows(10), []);
-  const cols = useMemo(() => initCols(26), []);
+  const cols = useMemo(() => initCols(15), []);
   return (
     <ResizableGrid
       layouts={layout}

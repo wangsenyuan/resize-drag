@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./index.scss";
-import { useResize } from "../context";
+import { useResize, useViewBox } from "../context";
 import { max, px } from "../utils";
 
 function makeResizer(rect, resizerRef, onChange, onResize) {
@@ -23,8 +23,8 @@ function makeResizer(rect, resizerRef, onChange, onResize) {
 
   function resize(evt) {
     let current = {
-      currentX: evt.pageX,
-      currentY: evt.pageY,
+      currentX: evt.pageX - evt.target.offsetLeft,
+      currentY: evt.pageY - evt.target.offsetTop,
     };
 
     rect.current = onChange(rect.current, current);
@@ -97,13 +97,21 @@ const workWithOnResize = (fn, onChange) => {
   };
 };
 
+const wrapByViewBox = (fn, viewBox) => {
+  return (rect, current) => {
+    let { currentX, currentY } = current;
+    currentX -= viewBox.x;
+    currentY -= viewBox.y;
+
+    return fn(rect, { currentX, currentY });
+  };
+};
+
 const Elem = ({ children }) => {
   const { resize, onResize } = useResize();
   const initRect = useRef(getRect(resize));
-
-  // console.log("initRect is(" + JSON.stringify(initRect.current) + ")");
-
   const [rect, setRect] = useState(resize);
+  const { viewBox } = useViewBox();
 
   const topLeft = useRef(null);
   const topRight = useRef(null);
@@ -114,28 +122,28 @@ const Elem = ({ children }) => {
     makeResizer(
       initRect,
       topLeft,
-      workWithOnResize(moveTopLeft, setRect),
+      workWithOnResize(wrapByViewBox(moveTopLeft, viewBox), setRect),
       onResize
     );
     makeResizer(
       initRect,
       topRight,
-      workWithOnResize(moveTopRight, setRect),
+      workWithOnResize(wrapByViewBox(moveTopRight, viewBox), setRect),
       onResize
     );
     makeResizer(
       initRect,
       bottomLeft,
-      workWithOnResize(moveBottomLeft, setRect),
+      workWithOnResize(wrapByViewBox(moveBottomLeft, viewBox), setRect),
       onResize
     );
     makeResizer(
       initRect,
       bottomRight,
-      workWithOnResize(moveBottomRight, setRect),
+      workWithOnResize(wrapByViewBox(moveBottomRight, viewBox), setRect),
       onResize
     );
-  }, [initRect, topLeft, topRight, bottomLeft, bottomLeft]);
+  }, [initRect, topLeft, topRight, bottomLeft, bottomLeft, viewBox]);
 
   return (
     <div

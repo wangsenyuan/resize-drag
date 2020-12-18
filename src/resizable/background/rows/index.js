@@ -26,8 +26,10 @@ function makeDragable(divRef, height, onMove, setMoving, onChange, label) {
     onMove(height, { x: evt.pageX, y: evt.pageY });
   }
 
-  function stopChange() {
-    console.log("stopChange called (" + label + ")");
+  function stopChange(evt) {
+    console.log(
+      "stopChange called (" + label + ", " + evt.pageX + "," + evt.pageY + ")"
+    );
     window.removeEventListener("mousemove", changeWidth);
     window.removeEventListener("mouseup", stopChange);
     onChange?.(height);
@@ -51,6 +53,7 @@ const Row = ({ width, row, label, onChange, index }) => {
 
   const wrapMove = useCallback(
     (height, current) => {
+      console.log("current is " + JSON.stringify(current));
       onCurrentMove?.({ dir: "horizontal", ...current });
       setHeight(height);
     },

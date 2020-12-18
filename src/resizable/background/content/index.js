@@ -10,7 +10,16 @@ const drawRowLines = (rows, width) => {
     let cur = rows[i];
     height += cur.height;
     lines.push(
-      <line x1={0} y1={height} x2={width} y2={height} stroke="black" key={i} />
+      <line
+        x1={0}
+        y1={height}
+        x2={width}
+        y2={height}
+        stroke="black"
+        key={i}
+        strokeWidth="1px"
+        shapeRendering="optimizeSpeed"
+      />
     );
   }
   return lines;
@@ -23,7 +32,16 @@ const drawColLines = (cols, height) => {
     let cur = cols[i];
     width += cur.width;
     lines.push(
-      <line x1={width} y1={0} x2={width} y2={height} stroke="black" key={i} />
+      <line
+        x1={width}
+        y1={0}
+        x2={width}
+        y2={height}
+        stroke="black"
+        key={i}
+        strokeWidth="1px"
+        shapeRendering="optimizeSpeed"
+      />
     );
   }
   return lines;
@@ -33,6 +51,9 @@ const drawMovingLine = (move, width, height, top, left) => {
   if (!move) {
     return null;
   }
+
+  console.log("will draw a virtual line " + JSON.stringify(move));
+
   let { dir, x, y } = move;
   x -= left;
   y -= top;
@@ -47,8 +68,9 @@ const drawMovingLine = (move, width, height, top, left) => {
         x2={x}
         y2={height}
         stroke="black"
-        stroke-linecap="round"
-        stroke-dasharray="1"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeDasharray="1"
       />
     );
   } else {
@@ -59,8 +81,9 @@ const drawMovingLine = (move, width, height, top, left) => {
         x2={width}
         y2={y}
         stroke="black"
-        stroke-linecap="round"
-        stroke-dasharray="1"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeDasharray="1"
       />
     );
   }
@@ -83,9 +106,10 @@ const Page = ({ rows, cols, width, height, top, left }) => {
       }}
     >
       <svg
+        width={width}
+        height={height}
         xmlns="http://www.w3.org/2000/svg"
         viewBox={`0 0 ${width} ${height}`}
-        preserveAspectRatio="xMinYMin meet"
       >
         {drawRowLines(rows, width)}
         {drawColLines(cols, height)}

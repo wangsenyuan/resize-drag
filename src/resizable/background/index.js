@@ -6,39 +6,17 @@ import Columns from "./columns";
 import Content from "./content";
 import { SvgMovingContext } from "../context";
 
-const partialSum = (initValue, nums) => {
-  let res = [initValue, ...nums];
-  for (let i = 1; i < res.length; i++) {
-    res[i] += res[i - 1];
-  }
-  return res;
-};
-
-const initWidth = 50;
-const initHeight = 50;
-
 const initMovingState = { dir: "vertical", x: 0, y: 0 };
 
 // rows has height, cols has width
-const Page = ({ rows, cols }) => {
-  const prefRowHeights = useMemo(
-    () =>
-      partialSum(
-        0,
-        rows.map((row) => row.height)
-      ),
-    [rows]
-  );
-
-  const prefColWidths = useMemo(
-    () =>
-      partialSum(
-        0,
-        cols.map((col) => col.width)
-      ),
-    [cols]
-  );
-
+const Page = ({
+  rows,
+  cols,
+  initWidth,
+  initHeight,
+  prefColWidths,
+  prefRowHeights,
+}) => {
   const [moving, setMoving] = useState(initMovingState);
 
   return (

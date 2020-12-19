@@ -118,7 +118,7 @@ const ResizableGrid = ({
 
   const gridRef = useRef(null);
 
-  const { clipRegion, virtualRect } = useClipRegion(
+  const { clipRegion } = useClipRegion(
     gridRef,
     prefRowHeights,
     prefColWidths,
@@ -128,7 +128,7 @@ const ResizableGrid = ({
   return (
     <div className={`resizable-grid-container`} ref={ref}>
       <ViewBoxContext.Provider value={{ viewBox }}>
-        <ClipContext.Provider value={{ clipRegion, virtualRect }}>
+        <ClipContext.Provider value={{ clipRegion }}>
           <>
             <div className={"resiable-grid-background"}>
               {renderBackground(rows, columns, onChangeRow, onChangeColumn)}

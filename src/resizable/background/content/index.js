@@ -95,24 +95,17 @@ const drawRect = ({ r1, c1, r2, c2 }, viewBox, fill) => {
   );
 };
 
-const drawVirtualRect = (virtualRect, viewBox) => {
-  if (!virtualRect) {
-    return;
-  }
-  return drawRect(virtualRect, viewBox, "gray");
-};
-
 const drawClipRegion = (region, viewBox) => {
   if (!region) {
     return null;
   }
-  return drawRect(region, viewBox, "green");
+  return drawRect(region, viewBox, region.moving ? "gray" : "green");
 };
 
 const Page = ({ rows, columns }) => {
   const { currentMove } = useSvgMoving();
   const { viewBox } = useViewBox();
-  const { virtualRect, clipRegion } = useClipContext();
+  const { clipRegion } = useClipContext();
   return (
     <div
       className="background-svg-container"
@@ -127,7 +120,6 @@ const Page = ({ rows, columns }) => {
         {drawRowLines(rows, viewBox.width)}
         {drawColLines(columns, viewBox.height)}
         {drawMovingLine(currentMove, viewBox)}
-        {drawVirtualRect(virtualRect, viewBox)}
         {drawClipRegion(clipRegion, viewBox)}
       </svg>
     </div>

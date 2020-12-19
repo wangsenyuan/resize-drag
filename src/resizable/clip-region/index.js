@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { binarySearch, max, min } from "../utils";
 
-function createListeners(elementRef, onRect, onMove) {
+function createListeners(elementRef, onMove) {
   if (!elementRef.current) {
     return;
   }
@@ -9,14 +9,12 @@ function createListeners(elementRef, onRect, onMove) {
   let element = elementRef.current;
   let rect = null;
   function start(evt) {
-    onRect(null);
     rect = { x1: 0, y1: 0, x2: 0, y2: 0 };
     rect.x1 = Math.floor(evt.pageX);
     rect.y1 = Math.floor(evt.pageY);
-    // console.log(`when starting clicking => ` + JSON.stringify(rect));
-    // console.log("start drawing rect (" + x1 + ", " + y1 + ")");
     element.addEventListener("mousemove", move);
     element.addEventListener("mouseup", stop);
+    element.addEventListener("mouseleave", stop);
   }
 
   function move(evt) {
@@ -25,7 +23,7 @@ function createListeners(elementRef, onRect, onMove) {
     }
     rect.x2 = Math.floor(evt.pageX);
     rect.y2 = Math.floor(evt.pageY);
-    onMove(rect);
+    onMove(Object.assign({}, rect, { moving: true }));
     // console.log("after move (" + JSON.stringify(rect) + ")");
   }
 
@@ -33,6 +31,7 @@ function createListeners(elementRef, onRect, onMove) {
     element.removeEventListener("mouseup", stop);
     element.removeEventListener("mousemove", move);
     element.removeEventListener("mousedown", start);
+    element.removeEventListener("mouseleave", stop);
   }
 
   function stop(evt) {
@@ -43,8 +42,7 @@ function createListeners(elementRef, onRect, onMove) {
     }
     rect.x2 = Math.floor(evt.pageX);
     rect.y2 = Math.floor(evt.pageY);
-    onRect(rect);
-    onMove(null);
+    onMove(rect);
     rect = null;
   }
 
@@ -69,7 +67,7 @@ function overlap(a, b) {
 }
 
 // rects is a map of {key, {top, left, width, height}}
-function coverRegions(origin, rect, rects) {
+function coverRegions(rect, rects) {
   if (!rect || !rects) {
     return null;
   }
@@ -101,7 +99,9 @@ function createRegion(origin, rect, heights, widths, rects) {
   x2 -= origin.offsetX;
   y2 -= origin.offsetY;
 
-  rect = coverRegions(origin, { x1, y1, x2, y2 }, rects);
+  rect = Object.assign({}, rect, {
+    ...coverRegions({ x1, y1, x2, y2 }, rects),
+  });
 
   let c1 = max(binarySearch(widths.length, (i) => widths[i] > rect.x1) - 1, 0);
   let r1 = max(
@@ -117,12 +117,7 @@ function createRegion(origin, rect, heights, widths, rects) {
     heights.length - 1
   );
 
-  return {
-    r1,
-    c1,
-    r2: r2 - 1,
-    c2: c2 - 1,
-  };
+  return Object.assign({}, rect, { r1, c1, r2: r2 - 1, c2: c2 - 1 });
 }
 
 function getOrigin(elementRef) {
@@ -134,36 +129,25 @@ function getOrigin(elementRef) {
 
 export const useClipRegion = (elementRef, rowHeights, columnWidths, rects) => {
   const [region, setRegion] = useState(null);
-  const [virtualRect, setVirtualRect] = useState(null);
 
-  const onRect = useCallback(
+  const onMove = useCallback(
     (rect) => {
       let origin = getOrigin(elementRef);
       rect = createRegion(origin, rect, rowHeights, columnWidths, rects);
       setRegion(rect);
       return rect;
     },
-    [rowHeights, columnWidths, setRegion, rects, elementRef]
-  );
-
-  const onMove = useCallback(
-    (rect) => {
-      let origin = getOrigin(elementRef);
-      rect = createRegion(origin, rect, rowHeights, columnWidths, rects);
-      setVirtualRect(rect);
-      return rect;
-    },
-    [setVirtualRect, rects, origin, rowHeights, columnWidths, elementRef]
+    [setRegion, rects, origin, rowHeights, columnWidths, elementRef]
   );
 
   useEffect(() => {
-    let clean = createListeners(elementRef, onRect, onMove);
+    let clean = createListeners(elementRef, onMove);
     return () => {
       clean?.();
     };
-  }, [elementRef, onRect, onMove]);
+  }, [elementRef, onMove]);
 
-  return { clipRegion: region, virtualRect };
+  return { clipRegion: region };
 };
 
 export default useClipRegion;

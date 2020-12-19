@@ -3,12 +3,12 @@
 div.grid-row {
   &.grid-cell {
     border: 1px solid $border-color;
-    border-bottom: none;
+    border-top: none;
     text-align: center;
     border-collapse: collapse;
 
     .grid-row-label {
-      height: calc(100% - 1px);
+      height: calc(100%);
     }
 
     position: relative;
@@ -21,7 +21,7 @@ div.grid-row {
       width: 100%;
       height: $moving-holder-gap;
       z-index: 1;
-      border-bottom: 1px solid $border-color;
+      // border-bottom: 1px solid $border-color;
 
       &:hover {
         cursor: row-resize;

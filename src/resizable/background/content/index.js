@@ -52,8 +52,6 @@ const drawMovingLine = (move, width, height, top, left) => {
     return null;
   }
 
-  console.log("will draw a virtual line " + JSON.stringify(move));
-
   let { dir, x, y } = move;
   x -= left;
   y -= top;

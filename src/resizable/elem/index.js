@@ -189,7 +189,6 @@ const Elem = ({ children }) => {
     topLeft,
     topRight,
     bottomLeft,
-    bottomLeft,
     viewBox,
     canReach,
     children.key,

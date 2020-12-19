@@ -120,8 +120,8 @@ function createRegion(origin, rect, heights, widths, rects) {
   return {
     r1,
     c1,
-    r2,
-    c2,
+    r2: r2 - 1,
+    c2: c2 - 1,
     x1: widths[c1] + origin.offsetX,
     y1: heights[r1] + origin.offsetY,
     x2: widths[c2] + origin.offsetX,

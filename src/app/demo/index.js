@@ -27,13 +27,15 @@ const initCols = (count) => {
 
 const Page = () => {
   const [layout, setLayout] = useState(initLayout);
-  const rows = useMemo(() => initRows(10), []);
-  const cols = useMemo(() => initCols(15), []);
+  const [rows, setRows] = useState(initRows(30));
+  const [cols, setCols] = useState(initCols(20));
   return (
     <ResizableGrid
       layouts={layout}
       rows={rows}
+      onChangeRows={setRows}
       cols={cols}
+      onChangeCols={setCols}
       onLayoutChange={setLayout}
       style={{ width: "800px", height: "600px", position: "relative" }}
     >

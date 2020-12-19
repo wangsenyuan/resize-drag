@@ -59,6 +59,7 @@ const drawMovingLine = (move, width, height, top, left) => {
   let line = null;
 
   if (dir === "vertical") {
+    x -= 5;
     line = (
       <line
         x1={x}
@@ -72,6 +73,7 @@ const drawMovingLine = (move, width, height, top, left) => {
       />
     );
   } else {
+    y -= 5;
     line = (
       <line
         x1={0}

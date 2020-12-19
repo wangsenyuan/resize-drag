@@ -127,32 +127,30 @@ const ResizableGrid = ({
   className,
   layouts,
   rows,
+  onChangeRows,
   cols,
+  onChangeCols,
   onLayoutChange,
   children,
   style,
   ...rest
 }) => {
-  const [rowsState, setRows] = useState(rows);
-
-  const [colsState, setCols] = useState(cols);
-
   const prefRowHeights = useMemo(
     () =>
       partialSum(
         0,
-        rowsState.map((row) => row.height)
+        rows.map((row) => row.height)
       ),
-    [rowsState]
+    [rows]
   );
 
   const prefColWidths = useMemo(
     () =>
       partialSum(
         0,
-        colsState.map((col) => col.width)
+        cols.map((col) => col.width)
       ),
-    [colsState]
+    [cols]
   );
 
   const gridViewBox = useMemo(() => {
@@ -190,10 +188,10 @@ const ResizableGrid = ({
       {...rest}
     >
       {renderBackground(
-        rowsState,
-        setRows,
-        colsState,
-        setCols,
+        rows,
+        onChangeRows,
+        cols,
+        onChangeCols,
         prefRowHeights,
         prefColWidths
       )}

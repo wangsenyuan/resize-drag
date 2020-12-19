@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./index.scss";
-import { useColumns, useSvgMoving } from "../../context";
+import { useSvgMoving } from "../../context";
 import { px, max } from "../../utils";
 
-function makeDragable(divRef, width, onMove, setMoving, onChange, label) {
+function makeDragable(divRef, width, onMove, setMoving, onChange) {
   if (!divRef.current) {
     return;
   }
-  console.log("makeDragable (" + label + ")");
   let div = divRef.current;
   let left = 0;
 
@@ -16,7 +15,6 @@ function makeDragable(divRef, width, onMove, setMoving, onChange, label) {
     setMoving(true);
     window.addEventListener("mousemove", changeWidth);
     window.addEventListener("mouseup", stopChange);
-    console.log("bottom line mouse down event");
   }
   div.addEventListener("mousedown", startMove);
 
@@ -26,7 +24,6 @@ function makeDragable(divRef, width, onMove, setMoving, onChange, label) {
   }
 
   function stopChange() {
-    console.log("stopChange called (" + label + ")");
     window.removeEventListener("mousemove", changeWidth);
     window.removeEventListener("mouseup", stopChange);
     onChange?.(width);
@@ -40,7 +37,7 @@ function makeDragable(divRef, width, onMove, setMoving, onChange, label) {
   };
 }
 
-const Column = ({ index, column, label, height, onChange }) => {
+const Column = ({ index, column, label, onChange }) => {
   const ref = useRef(null);
   const [width, setWidth] = useState(column.width);
   const [moving, setMoving] = useState(false);
@@ -64,24 +61,17 @@ const Column = ({ index, column, label, height, onChange }) => {
   );
 
   useEffect(() => {
-    return makeDragable(
-      ref,
-      column.width,
-      wrapMove,
-      setMoving,
-      wrapChange,
-      label
-    );
+    return makeDragable(ref, column.width, wrapMove, setMoving, wrapChange);
   }, [ref, column.width, wrapChange, wrapMove, setMoving]);
 
   return (
     <div
-      className="grid-column grid-cell"
-      style={{ width: px(width), height: px(height) }}
+      className="header-column grid-cell"
+      style={{ width: px(width), height: "100%" }}
     >
-      <div className="grid-column-label">{label}</div>
+      <div className="header-column-label">{label}</div>
       <div
-        className={`grid-column-right-border ${moving ? "moving" : ""}`}
+        className={`header-column-right-border ${moving ? "moving" : ""}`}
         ref={ref}
       ></div>
     </div>
@@ -94,43 +84,17 @@ function getLabel(index) {
   return String.fromCharCode(A.charCodeAt(0) + index);
 }
 
-const Page = ({ left, width, height, columns }) => {
-  const { onChangeColumns } = useColumns();
-
-  const onChangeColumnWidth = useCallback(
-    (index, width) => {
-      onChangeColumns((cols) => {
-        return cols.map((col, pos) => {
-          if (pos === index) {
-            return Object.assign({}, col, { width });
-          }
-          return col;
-        });
-      });
-    },
-    [onChangeColumns]
-  );
-
+const Page = ({ columns, onChange }) => {
   return (
-    <div
-      className="columns-container"
-      style={{
-        height: px(height),
-        width: px(width),
-        position: "absolute",
-        top: 0,
-        left: px(left),
-      }}
-    >
+    <div className="header-columns-container">
       {columns.map((col, index) => {
         return (
           <Column
             key={index}
             column={col}
             label={getLabel(index)}
-            height={height}
             index={index}
-            onChange={onChangeColumnWidth}
+            onChange={onChange}
           />
         );
       })}

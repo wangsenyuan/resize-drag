@@ -7,6 +7,13 @@ export function max(a, b) {
   return b;
 }
 
+export function min(a, b) {
+  if (a <= b) {
+    return a;
+  }
+  return b;
+}
+
 export const px = (value) => `${value}px`;
 
 export const last = (arr) => {
@@ -42,4 +49,8 @@ export const partialSum = (initValue, nums) => {
     res[i] += res[i - 1];
   }
   return res;
+};
+
+export const createAction = (type, value) => {
+  return { type, value };
 };

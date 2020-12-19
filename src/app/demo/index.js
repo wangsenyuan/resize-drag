@@ -1,12 +1,6 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useReducer, useState } from "react";
 
 import ResizableGrid from "@/resizable";
-
-const initLayout = {
-  first: { rect: { r1: 0, c1: 0, r2: 2, c2: 2 } },
-  second: { rect: { r1: 3, c1: 3, r2: 10, c2: 5 } },
-};
-
 const initRows = (count) => {
   let height = 50;
   let res = [];
@@ -25,40 +19,68 @@ const initCols = (count) => {
   return res;
 };
 
-const Page = () => {
-  const [layout, setLayout] = useState(initLayout);
-  const [rows, setRows] = useState(initRows(30));
-  const [cols, setCols] = useState(initCols(20));
+const initLayout = {
+  rows: initRows(30),
+  columns: initCols(26),
+  regions: [
+    { key: "first", r1: 0, c1: 0, r2: 4, c2: 2 },
+    { key: "second", r1: 4, c1: 4, r2: 4, c2: 6 },
+  ],
+};
 
-  const onChangeLayout = useCallback(
-    (key, layout) => {
-      setLayout((layouts) => {
-        let cur = layouts[key];
-        let tmp = Object.assign({}, cur, { rect: layout });
-        let newLayouts = Object.assign({}, layouts);
-        newLayouts[key] = tmp;
-        return newLayouts;
-      });
-    },
-    [setLayout]
-  );
+const updateRegion = (state, { key, region }) => {
+  let { regions } = state;
+  let newRegions = regions.map((cur) => {
+    if (cur.key === key) {
+      return Object.assign({}, cur, { ...region });
+    }
+    return cur;
+  });
+  return Object.assign({}, state, { regions: newRegions });
+};
+
+const updateRow = (state, { index, height }) => {
+  let { rows } = state;
+  let newRows = rows.slice();
+  newRows[index] = Object.assign({}, newRows[index], { height });
+  return Object.assign({}, state, { rows: newRows });
+};
+
+const updateColumn = (state, { index, width }) => {
+  let { columns } = state;
+  let newColumnes = columns.slice();
+  newColumnes[index] = Object.assign({}, newColumnes[index], { width });
+  return Object.assign({}, state, { columns: newColumnes });
+};
+
+const layoutReducer = (state, { type, value }) => {
+  switch (type) {
+    case "change-row":
+      return updateRow(state, value);
+    case "change-column":
+      return updateColumn(state, value);
+    case "change-region":
+      return updateRegion(state, value);
+  }
+  return state;
+};
+
+const Page = () => {
+  const [layout, dispatch] = useReducer(layoutReducer, initLayout);
+
   return (
-    <ResizableGrid
-      layouts={layout}
-      rows={rows}
-      onChangeRows={setRows}
-      cols={cols}
-      onChangeCols={setCols}
-      onChangeLayout={onChangeLayout}
-      style={{ width: "800px", height: "600px", position: "relative" }}
-    >
-      <div className="demo-element" key="first">
-        Hello ResizableGrid
-      </div>
-      <div className="demo-element" key="second">
-        Hello World
-      </div>
-    </ResizableGrid>
+    <>
+      <div>这是操作区域上面</div>
+      <ResizableGrid layout={layout} onChangeLayout={dispatch}>
+        <div className="demo-element" key="first">
+          Hello ResizableGrid
+        </div>
+        <div className="demo-element" key="second">
+          Hello World
+        </div>
+      </ResizableGrid>
+      <div>这在操作区域下面</div>
+    </>
   );
 };
 

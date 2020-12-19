@@ -1,14 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { px, max } from "../../utils";
 import "./index.scss";
-import { useRows, useSvgMoving } from "../../context";
-import useWhyDidYouUpdate from "@/hooks/why-did-update";
+import { useSvgMoving } from "../../context";
 
-function makeDragable(divRef, height, onMove, setMoving, onChange, label) {
+function makeDragable(divRef, height, onMove, setMoving, onChange) {
   if (!divRef.current) {
     return;
   }
-  console.log("makeDragable (" + label + ")");
   let div = divRef.current;
   let top = 0;
 
@@ -17,7 +15,6 @@ function makeDragable(divRef, height, onMove, setMoving, onChange, label) {
     setMoving(true);
     window.addEventListener("mousemove", changeWidth);
     window.addEventListener("mouseup", stopChange);
-    console.log("bottom line mouse down event");
   }
   div.addEventListener("mousedown", startMove);
 
@@ -27,12 +24,9 @@ function makeDragable(divRef, height, onMove, setMoving, onChange, label) {
   }
 
   function stopChange(evt) {
-    console.log(
-      "stopChange called (" + label + ", " + evt.pageX + "," + evt.pageY + ")"
-    );
     window.removeEventListener("mousemove", changeWidth);
     window.removeEventListener("mouseup", stopChange);
-    onChange?.(height);
+    onChange(height);
     setMoving(false);
   }
 
@@ -43,7 +37,7 @@ function makeDragable(divRef, height, onMove, setMoving, onChange, label) {
   };
 }
 
-const Row = ({ width, row, label, onChange, index }) => {
+const Row = ({ row, label, onChange, index }) => {
   const ref = useRef(null);
 
   const [height, setHeight] = useState(row.height);
@@ -53,7 +47,6 @@ const Row = ({ width, row, label, onChange, index }) => {
 
   const wrapMove = useCallback(
     (height, current) => {
-      console.log("current is " + JSON.stringify(current));
       onCurrentMove?.({ dir: "horizontal", ...current });
       setHeight(height);
     },
@@ -63,7 +56,7 @@ const Row = ({ width, row, label, onChange, index }) => {
   const wrapChange = useCallback(
     (height) => {
       onChange?.(index, height);
-      onCurrentMove(null);
+      onCurrentMove?.(null);
     },
     [onChange, onCurrentMove, index]
   );
@@ -82,63 +75,32 @@ const Row = ({ width, row, label, onChange, index }) => {
 
   return (
     <div
-      className="grid-row grid-cell"
-      style={{ width: px(width), height: px(height) }}
+      className="header-row grid-cell"
+      style={{ height: px(height), width: "100%" }}
     >
-      <div className="grid-row-label">{label}</div>
+      <div className="header-row-label">{label}</div>
       <div
-        className={`grid-row-bottom-line ${moving ? "moving" : ""}`}
+        className={`header-row-bottom-line ${moving ? "moving" : ""}`}
         ref={ref}
       ></div>
     </div>
   );
 };
 
-const Wrapped = (props) => {
-  useWhyDidYouUpdate(props.label, props);
-  return <Row {...props} />;
-};
-
-const Page = ({ width, rows, height }) => {
-  const { onChangeRows } = useRows();
-
-  const onChangeRowHeight = useCallback(
-    (index, height) => {
-      onChangeRows((rows) => {
-        let newRows = rows.map((row, pos) => {
-          if (pos != index) {
-            return row;
-          }
-          return Object.assign({}, row, { height });
-        });
-        return newRows;
-      });
-    },
-    [onChangeRows]
-  );
-
+const Page = ({ rows, onChange }) => {
   return (
-    <div
-      style={{ width: px(width), height: px(height) }}
-      className="rows-container"
-    >
+    <div className="header-rows-container">
       {rows.map((row, index) => (
-        <Wrapped
-          width={width}
+        <Row
           row={row}
           key={index}
           label={index + 1}
           index={index}
-          onChange={onChangeRowHeight}
+          onChange={onChange}
         />
       ))}
     </div>
   );
 };
 
-const WrappedPage = (props) => {
-  useWhyDidYouUpdate("rows", props);
-  return <Page {...props} />;
-};
-
-export default WrappedPage;
+export default Page;

@@ -1,20 +1,19 @@
 @import '../../css-variables.scss';
 
-div.grid-row {
-  &.grid-cell {
+div.header-rows-container {
+  .header-row {
     border: 1px solid $border-color;
     border-top: none;
     text-align: center;
     border-collapse: collapse;
 
-    .grid-row-label {
+    .header-row-label {
       height: calc(100%);
     }
 
     position: relative;
 
-    div.grid-row-bottom-line {
-      // background-color: red;
+    div.header-row-bottom-line {
       position: absolute;
       bottom: 0;
       left: 0;

@@ -1,7 +1,7 @@
 import React from "react";
 import { px } from "../../utils";
 import "./index.scss";
-import { useSvgMoving } from "../../context";
+import { useClipContext, useSvgMoving, useViewBox } from "../../context";
 
 const drawRowLines = (rows, width) => {
   let lines = [];
@@ -47,20 +47,17 @@ const drawColLines = (cols, height) => {
   return lines;
 };
 
-const drawMovingLine = (move, width, height, top, left) => {
+const drawMovingLine = (move, viewBox) => {
   if (!move) {
     return null;
   }
-
+  let { width, height, offsetX, offsetY } = viewBox;
   let { dir, x, y } = move;
-  x -= left;
-  y -= top;
-
-  let line = null;
+  x -= offsetX;
+  y -= offsetY;
 
   if (dir === "vertical") {
-    x -= 5;
-    line = (
+    return (
       <line
         x1={x}
         y1={0}
@@ -72,48 +69,55 @@ const drawMovingLine = (move, width, height, top, left) => {
         strokeDasharray="1"
       />
     );
-  } else {
-    y -= 5;
-    line = (
-      <line
-        x1={0}
-        y1={y}
-        x2={width}
-        y2={y}
-        stroke="black"
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeDasharray="1"
-      />
-    );
   }
-
-  return line;
+  return (
+    <line
+      x1={0}
+      y1={y}
+      x2={width}
+      y2={y}
+      stroke="black"
+      strokeWidth="1"
+      strokeLinecap="round"
+      strokeDasharray="1"
+    />
+  );
 };
 
-const Page = ({ rows, cols, width, height, top, left }) => {
-  const { currentMove } = useSvgMoving();
+const drawVirtualRect = (virtualRect, viewBox) => {
+  if (!virtualRect) {
+    return;
+  }
+  // console.log("draw rect " + JSON.stringify(virtualRect));
+  let { x1, y1, x2, y2 } = virtualRect;
 
+  x1 -= viewBox.offsetX;
+  x2 -= viewBox.offsetX;
+  y1 -= viewBox.offsetY;
+  y2 -= viewBox.offsetY;
+
+  return <rect x={x1} y={y1} width={x2 - x1} height={y2 - y1}></rect>;
+};
+
+const Page = ({ rows, columns }) => {
+  const { currentMove } = useSvgMoving();
+  const { viewBox } = useViewBox();
+  const { virtualRect } = useClipContext();
   return (
     <div
       className="background-svg-container"
-      style={{
-        position: "absolute",
-        top: px(top),
-        left: px(left),
-        width: px(width),
-        height: px(height),
-      }}
+      style={{ width: px(viewBox.width), height: px(viewBox.height) }}
     >
       <svg
-        width={width}
-        height={height}
+        width={viewBox.width}
+        height={viewBox.height}
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={`0 0 ${width} ${height}`}
+        viewBox={`0 0 ${viewBox.width} ${viewBox.height}`}
       >
-        {drawRowLines(rows, width)}
-        {drawColLines(cols, height)}
-        {drawMovingLine(currentMove, width, height, top, left)}
+        {drawRowLines(rows, viewBox.width)}
+        {drawColLines(columns, viewBox.height)}
+        {drawMovingLine(currentMove, viewBox)}
+        {drawVirtualRect(virtualRect, viewBox)}
       </svg>
     </div>
   );

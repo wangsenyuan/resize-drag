@@ -1,8 +1,14 @@
-import React, { useCallback, useMemo, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Region from "./region";
 import Background from "./background";
 import "./index.scss";
-import { partialSum, createAction, last, px, logWhenChange } from "./utils";
+import { partialSum, createAction, last, px, getElementOffset } from "./utils";
 import { ClipContext, ViewBoxContext } from "./context";
 import { useClipRegion } from "./clip-region";
 
@@ -65,26 +71,41 @@ const FIRST_HEIGHT = 50;
 const FIRST_WIDTH = 60;
 
 const createViewBox = (heights, widths, divRef) => {
-  return useMemo(() => {
-    let top = 0;
-    let left = 0;
+  const [viewBox, setViewBox] = useState({
+    top: 0,
+    left: 0,
+    heights,
+    widths,
+    width: last(widths),
+    height: last(heights),
+    offsetX: FIRST_WIDTH,
+    offsetY: FIRST_HEIGHT,
+  });
+
+  useEffect(() => {
     if (divRef.current) {
       const div = divRef.current;
-      left = div.getBoundingClientRect().left;
-      top = div.getBoundingClientRect().top;
-    }
+      let { top, left } = getElementOffset(div);
+      top = Math.floor(top);
+      left = Math.floor(left);
 
-    return {
-      top,
-      left,
-      heights,
-      widths,
-      width: last(widths),
-      height: last(heights),
-      offsetX: FIRST_WIDTH + left,
-      offsetY: FIRST_HEIGHT + top,
-    };
-  }, [heights, widths, divRef]);
+      setViewBox((viewBox) => {
+        let newBox = Object.assign({}, viewBox, {
+          top,
+          left,
+          heights,
+          widths,
+          width: last(widths),
+          height: last(heights),
+          offsetX: FIRST_WIDTH + left,
+          offsetY: FIRST_HEIGHT + top,
+        });
+        return newBox;
+      });
+    }
+  }, [heights, widths, divRef, setViewBox]);
+
+  return viewBox;
 };
 
 const ResizableGrid = ({
@@ -122,7 +143,8 @@ const ResizableGrid = ({
     gridRef,
     prefRowHeights,
     prefColWidths,
-    rects
+    rects,
+    viewBox
   );
 
   return (

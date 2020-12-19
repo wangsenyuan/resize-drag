@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useReducer, useState } from "react";
+import React, { useReducer } from "react";
 
 import ResizableGrid from "@/resizable";
 const initRows = (count) => {
@@ -25,6 +25,7 @@ const initLayout = {
   regions: [
     { key: "first", r1: 1, c1: 1, r2: 4, c2: 2 },
     { key: "second", r1: 4, c1: 4, r2: 4, c2: 6 },
+    { key: "third", r1: 2, c1: 4, r2: 2, c2: 7 },
   ],
 };
 
@@ -77,6 +78,9 @@ const Page = () => {
         </div>
         <div className="demo-element" key="second">
           Hello World
+        </div>
+        <div className="demo-element" key="third">
+          Hello Again
         </div>
       </ResizableGrid>
       <div>这在操作区域下面</div>

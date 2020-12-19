@@ -120,24 +120,22 @@ function createRegion(origin, rect, heights, widths, rects) {
   return Object.assign({}, rect, { r1, c1, r2: r2 - 1, c2: c2 - 1 });
 }
 
-function getOrigin(elementRef) {
-  let element = elementRef.current;
-  let offsetX = Math.floor(element.getBoundingClientRect().left);
-  let offsetY = Math.floor(element.getBoundingClientRect().top);
-  return { offsetX, offsetY };
-}
-
-export const useClipRegion = (elementRef, rowHeights, columnWidths, rects) => {
+export const useClipRegion = (
+  elementRef,
+  rowHeights,
+  columnWidths,
+  rects,
+  viewBox
+) => {
   const [region, setRegion] = useState(null);
 
   const onMove = useCallback(
     (rect) => {
-      let origin = getOrigin(elementRef);
-      rect = createRegion(origin, rect, rowHeights, columnWidths, rects);
+      rect = createRegion(viewBox, rect, rowHeights, columnWidths, rects);
       setRegion(rect);
       return rect;
     },
-    [setRegion, rects, origin, rowHeights, columnWidths, elementRef]
+    [setRegion, rects, rowHeights, columnWidths, elementRef, viewBox]
   );
 
   useEffect(() => {

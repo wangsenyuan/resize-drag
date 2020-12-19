@@ -54,3 +54,17 @@ export const partialSum = (initValue, nums) => {
 export const createAction = (type, value) => {
   return { type, value };
 };
+
+export const getElementOffset = (elem) => {
+  let offsetLeft = 0;
+  let offsetTop = 0;
+  do {
+    if (!isNaN(elem.offsetLeft)) {
+      offsetLeft += elem.offsetLeft;
+    }
+    if (!isNaN(elem.offsetTop)) {
+      offsetTop += elem.offsetTop;
+    }
+  } while ((elem = elem.offsetParent));
+  return { top: offsetTop, left: offsetLeft };
+};

@@ -84,13 +84,11 @@ const drawMovingLine = (move, viewBox) => {
   );
 };
 
-const drawRect = ({ x1, y1, x2, y2 }, viewBox, fill) => {
-  // console.log(`draw ${x1} ${y1} ${x2} ${y2}`);
-
-  x1 -= viewBox.offsetX;
-  x2 -= viewBox.offsetX;
-  y1 -= viewBox.offsetY;
-  y2 -= viewBox.offsetY;
+const drawRect = ({ r1, c1, r2, c2 }, viewBox, fill) => {
+  let x1 = viewBox.widths[c1];
+  let y1 = viewBox.heights[r1];
+  let x2 = viewBox.widths[c2 + 1];
+  let y2 = viewBox.heights[r2 + 1];
 
   return (
     <rect x={x1} y={y1} width={x2 - x1} height={y2 - y1} fill={fill}></rect>

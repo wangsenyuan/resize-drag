@@ -64,23 +64,27 @@ const renderBackground = (rows, columns, onChangeRow, onChangeColumn) => {
 const FIRST_HEIGHT = 50;
 const FIRST_WIDTH = 60;
 
-const createViewBox = (height, width, divRef) => {
-  let top = 0;
-  let left = 0;
-  if (divRef.current) {
-    const div = divRef.current;
-    left = div.getBoundingClientRect().left;
-    top = div.getBoundingClientRect().top;
-  }
+const createViewBox = (heights, widths, divRef) => {
+  return useMemo(() => {
+    let top = 0;
+    let left = 0;
+    if (divRef.current) {
+      const div = divRef.current;
+      left = div.getBoundingClientRect().left;
+      top = div.getBoundingClientRect().top;
+    }
 
-  return {
-    top,
-    left,
-    width,
-    height,
-    offsetX: FIRST_WIDTH + left,
-    offsetY: FIRST_HEIGHT + top,
-  };
+    return {
+      top,
+      left,
+      heights,
+      widths,
+      width: last(widths),
+      height: last(heights),
+      offsetX: FIRST_WIDTH + left,
+      offsetY: FIRST_HEIGHT + top,
+    };
+  }, [heights, widths, divRef]);
 };
 
 const ResizableGrid = ({
@@ -110,7 +114,7 @@ const ResizableGrid = ({
 
   const ref = useRef(null);
 
-  const viewBox = createViewBox(last(prefRowHeights), last(prefColWidths), ref);
+  const viewBox = createViewBox(prefRowHeights, prefColWidths, ref);
 
   const gridRef = useRef(null);
 
@@ -120,8 +124,6 @@ const ResizableGrid = ({
     prefColWidths,
     rects
   );
-
-  // logWhenChange("virtualRect", virtualRect);
 
   return (
     <div className={`resizable-grid-container`} ref={ref}>

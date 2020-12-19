@@ -11,6 +11,7 @@ import "./index.scss";
 import { partialSum, createAction, last, px, getElementOffset } from "./utils";
 import { ClipContext, ViewBoxContext } from "./context";
 import { useClipRegion } from "./clip-region";
+import { useClickAndDbClick } from "@/hooks/wrap-click";
 
 const memoPartialSum = (arr, initValue, mapper) => {
   return useMemo(() => partialSum(initValue, arr.map(mapper)), [arr]);
@@ -108,10 +109,29 @@ const createViewBox = (heights, widths, divRef) => {
   return viewBox;
 };
 
+function inRegion(region, current) {
+  return (
+    region.r1 <= current.r1 &&
+    region.c1 <= current.c1 &&
+    current.r2 <= region.r2 &&
+    current.c2 <= region.c2
+  );
+}
+
+function checkEmptyRegion(regions, current) {
+  for (let i in regions) {
+    if (inRegion(regions[i], current)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 const ResizableGrid = ({
   layout: { rows, columns, regions },
   onChangeLayout,
   children,
+  onClickEmptyRegion,
 }) => {
   const prefRowHeights = memoPartialSum(rows, 0, (row) => row.height);
 
@@ -147,6 +167,20 @@ const ResizableGrid = ({
     viewBox
   );
 
+  const wrapOnClickEmptyRegion = useCallback(
+    (evt) => {
+      if (!onClickEmptyRegion || !clipRegion) {
+        return null;
+      }
+      if (checkEmptyRegion(regions, clipRegion)) {
+        onClickEmptyRegion(evt, clipRegion);
+      }
+    },
+    [onClickEmptyRegion, regions, clipRegion]
+  );
+
+  const onGridClick = useClickAndDbClick(null, wrapOnClickEmptyRegion);
+
   return (
     <div className={`resizable-grid-container`} ref={ref}>
       <ViewBoxContext.Provider value={{ viewBox }}>
@@ -156,6 +190,7 @@ const ResizableGrid = ({
               {renderBackground(rows, columns, onChangeRow, onChangeColumn)}
             </div>
             <div
+              onClick={onGridClick}
               ref={gridRef}
               className="resizable-grid"
               style={{

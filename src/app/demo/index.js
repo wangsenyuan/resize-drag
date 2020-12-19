@@ -1,6 +1,7 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useCallback } from "react";
 
 import ResizableGrid from "@/resizable";
+import { createAction } from "../../resizable/utils";
 const initRows = (count) => {
   let height = 50;
   let res = [];
@@ -27,6 +28,7 @@ const initLayout = {
     { key: "second", r1: 4, c1: 4, r2: 4, c2: 6 },
     { key: "third", r1: 2, c1: 4, r2: 2, c2: 7 },
   ],
+  children: [],
 };
 
 const updateRegion = (state, { key, region }) => {
@@ -54,6 +56,19 @@ const updateColumn = (state, { index, width }) => {
   return Object.assign({}, state, { columns: newColumnes });
 };
 
+const addText = (state, { r1, c1, r2, c2 }) => {
+  let { children, regions } = state;
+  let id = children.length;
+  let key = "child-" + id;
+  let region = { key, r1, c1, r2, c2 };
+  let newRegions = [...regions, region];
+  let newChildren = [...children, { type: "input", key }];
+  return Object.assign({}, state, {
+    children: newChildren,
+    regions: newRegions,
+  });
+};
+
 const layoutReducer = (state, { type, value }) => {
   switch (type) {
     case "change-row":
@@ -62,26 +77,63 @@ const layoutReducer = (state, { type, value }) => {
       return updateColumn(state, value);
     case "change-region":
       return updateRegion(state, value);
+    case "add-text":
+      return addText(state, value);
   }
   return state;
+};
+
+const renderChild = (child) => {
+  if (child.type === "input") {
+    return <input key={child.key} value="test" />;
+  }
+  return null;
+};
+
+const renderLayoutChildren = (layout) => {
+  let { children } = layout;
+
+  let res = [...children.map((child) => renderChild(child))];
+  res.push(
+    <div className="demo-element" key="first">
+      Hello ResizableGrid
+    </div>
+  );
+  res.push(
+    <div className="demo-element" key="second">
+      Hello World
+    </div>
+  );
+
+  res.push(
+    <div className="demo-element" key="third">
+      Hello Again
+    </div>
+  );
+
+  return res;
 };
 
 const Page = () => {
   const [layout, dispatch] = useReducer(layoutReducer, initLayout);
 
+  const onAddText = useCallback(
+    (evt, region) => {
+      console.log("onAddText called (" + JSON.stringify(region) + ")");
+      dispatch(createAction("add-text", region));
+    },
+    [dispatch]
+  );
+
   return (
     <>
       <div>这是操作区域上面</div>
-      <ResizableGrid layout={layout} onChangeLayout={dispatch}>
-        <div className="demo-element" key="first">
-          Hello ResizableGrid
-        </div>
-        <div className="demo-element" key="second">
-          Hello World
-        </div>
-        <div className="demo-element" key="third">
-          Hello Again
-        </div>
+      <ResizableGrid
+        layout={layout}
+        onChangeLayout={dispatch}
+        onClickEmptyRegion={onAddText}
+      >
+        {renderLayoutChildren(layout)}
       </ResizableGrid>
       <div>这在操作区域下面</div>
     </>

@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./index.scss";
 import { useViewBox } from "../context";
 import { max, px } from "../utils";
 
 function makeResizer(rect, resizerRef, onChange, onResize) {
-  if (!resizerRef.current) {
+  if (!resizerRef.current || !rect.current) {
     return;
   }
-  console.log("making resizer");
+  // console.log("making resizer");
   const element = resizerRef.current;
 
   function startResize() {
@@ -19,7 +19,7 @@ function makeResizer(rect, resizerRef, onChange, onResize) {
 
   function stopResize() {
     let res = onResize(rect.current);
-    onChange(res);
+    // onChange(res);
     rect.current = res;
     window.removeEventListener("mousemove", resize);
     window.removeEventListener("mouseup", stopResize);
@@ -124,9 +124,15 @@ const wrapByViewBox = (fn, viewBox) => {
 
 const Elem = ({ children }) => {
   const { viewBox, canReach, getResize, onResize } = useViewBox();
-  const resize = getResize(children.key);
-  const initRect = useRef(getRect(resize));
-  const [rect, setRect] = useState(resize);
+  // const resize = useMemo(() => getResize(children.key), [getResize]);
+  const initRect = useRef(null);
+  const [rect, setRect] = useState(null);
+
+  useEffect(() => {
+    const resize = getResize(children.key);
+    initRect.current = resize;
+    setRect(resize);
+  }, [initRect, setRect, getResize]);
 
   const topLeft = useRef(null);
   const topRight = useRef(null);
@@ -179,10 +185,10 @@ const Elem = ({ children }) => {
       (resize) => onResize(children.key, resize)
     );
     return () => {
-      clean1();
-      clean2();
-      clean3();
-      clean4();
+      clean1?.();
+      clean2?.();
+      clean3?.();
+      clean4?.();
     };
   }, [
     initRect,
@@ -194,16 +200,15 @@ const Elem = ({ children }) => {
     children.key,
     onResize,
   ]);
-
   return (
     <div
       className={`resizable`}
       style={{
         position: "absolute",
-        top: px(rect.top),
-        left: px(rect.left),
-        width: px(rect.width),
-        height: px(rect.height),
+        top: px(rect?.top),
+        left: px(rect?.left),
+        width: px(rect?.width),
+        height: px(rect?.height),
       }}
     >
       <div className="resizers">

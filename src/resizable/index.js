@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { RowsContext, ColumnsContext, ViewBoxContext } from "./context";
 import ResizableElem from "./elem";
 import Background from "./background";
 import "./index.scss";
-import { binarySearch, last, px } from "./utils";
+import { binarySearch, last, px, partialSum } from "./utils";
 
 const initWidth = 50;
 const initHeight = 50;
@@ -43,14 +43,6 @@ const renderBackground = (
       </RowsContext.Provider>
     </ColumnsContext.Provider>
   );
-};
-
-const partialSum = (initValue, nums) => {
-  let res = [initValue, ...nums];
-  for (let i = 1; i < res.length; i++) {
-    res[i] += res[i - 1];
-  }
-  return res;
 };
 
 function getCoordinates(rect) {
@@ -123,34 +115,79 @@ const createCanReach = (rowHeights, colWidths, layouts) => {
   return canReach;
 };
 
+const calcResize = (layout, rowHeights, colWidths) => {
+  let { rect } = layout;
+  let { r1, c1, r2, c2 } = rect;
+  let top = rowHeights[r1];
+  let left = colWidths[c1];
+  let height = rowHeights[r2 + 1] - top;
+  let width = colWidths[c2 + 1] - left;
+  return { top, left, width, height };
+};
+
+const calcResizes = (layouts, rowHeights, colWidths) => {
+  let resizes = {};
+
+  for (let key in layouts) {
+    let layout = layouts[key];
+    resizes[key] = calcResize(layout, rowHeights, colWidths);
+  }
+
+  return resizes;
+};
+
+const calcLayoutRect = (resize, rowHeights, colWidths) => {
+  console.log("calLayoutRect for (" + JSON.stringify(resize) + ")");
+  let { top, left, height, width } = resize;
+  let i = binarySearch(rowHeights.length, (i) => rowHeights[i] > top) - 1;
+  let j = binarySearch(colWidths.length, (j) => colWidths[j] > left) - 1;
+  let k =
+    binarySearch(rowHeights.length, (k) => rowHeights[k] >= top + height) - 1;
+  let l =
+    binarySearch(colWidths.length, (l) => colWidths[l] >= left + width) - 1;
+
+  let res = { r1: i, c1: j, r2: k, c2: l };
+
+  console.log("result is " + JSON.stringify(res));
+  console.log(
+    "it resize is " +
+      JSON.stringify(calcResize({ rect: res }, rowHeights, colWidths))
+  );
+
+  return res;
+};
+
+const memoPartialSum = (arr, initValue, mapper) => {
+  return useMemo(() => partialSum(initValue, arr.map(mapper)), [arr]);
+};
+
 const ResizableGrid = ({
   className,
-  layouts,
   rows,
   onChangeRows,
   cols,
   onChangeCols,
-  onLayoutChange,
+  layouts,
+  onChangeLayout,
   children,
-  style,
   ...rest
 }) => {
-  const prefRowHeights = useMemo(
-    () =>
-      partialSum(
-        0,
-        rows.map((row) => row.height)
-      ),
-    [rows]
-  );
+  const prefRowHeights = memoPartialSum(rows, 0, (row) => row.height);
 
-  const prefColWidths = useMemo(
-    () =>
-      partialSum(
-        0,
-        cols.map((col) => col.width)
-      ),
-    [cols]
+  const prefColWidths = memoPartialSum(cols, 0, (col) => col.width);
+
+  const resizes = useMemo(() => {
+    return calcResizes(layouts, prefRowHeights, prefColWidths);
+  }, [layouts, prefColWidths, prefRowHeights]);
+
+  const onChangeResize = useCallback(
+    (key, resize) => {
+      onChangeLayout(
+        key,
+        calcLayoutRect(resize, prefRowHeights, prefColWidths)
+      );
+    },
+    [onChangeLayout, prefRowHeights, prefColWidths]
   );
 
   const gridViewBox = useMemo(() => {
@@ -159,32 +196,30 @@ const ResizableGrid = ({
       y: initHeight,
     };
 
-    const canReach = createCanReach(prefRowHeights, prefColWidths, layouts);
+    const canReach = createCanReach(prefRowHeights, prefColWidths, resizes);
 
     const onResize = (key, resize) => {
       resize = checkResize(prefRowHeights, prefColWidths, resize);
-      let newLayouts = Object.assign({}, layouts);
-      newLayouts[key] = resize;
-      onLayoutChange(newLayouts);
+      onChangeResize(key, resize);
       return resize;
     };
 
-    const getResize = (key) => layouts[key];
+    const getResize = (key) => resizes[key];
 
     return { viewBox, canReach, onResize, getResize };
   }, [
     initWidth,
     initHeight,
-    layouts,
+    resizes,
     prefColWidths,
     prefRowHeights,
-    onLayoutChange,
+    onChangeResize,
   ]);
 
   return (
     <div
       className={`${className} resizable-grid-container`}
-      style={{ position: "relative", ...style }}
+      style={{ position: "relative" }}
       {...rest}
     >
       {renderBackground(
@@ -206,9 +241,7 @@ const ResizableGrid = ({
         }}
       >
         <ViewBoxContext.Provider value={gridViewBox}>
-          <div className="resizable-grid">
-            {renderChildren(children, layouts)}
-          </div>
+          <div className="resizable-grid">{renderChildren(children)}</div>
         </ViewBoxContext.Provider>
       </div>
     </div>

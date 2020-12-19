@@ -35,3 +35,11 @@ export function logWhenChange(label, obj) {
     console.log(`${label} changed`);
   }, [obj]);
 }
+
+export const partialSum = (initValue, nums) => {
+  let res = [initValue, ...nums];
+  for (let i = 1; i < res.length; i++) {
+    res[i] += res[i - 1];
+  }
+  return res;
+};

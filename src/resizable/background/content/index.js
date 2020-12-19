@@ -84,25 +84,37 @@ const drawMovingLine = (move, viewBox) => {
   );
 };
 
-const drawVirtualRect = (virtualRect, viewBox) => {
-  if (!virtualRect) {
-    return;
-  }
-  // console.log("draw rect " + JSON.stringify(virtualRect));
-  let { x1, y1, x2, y2 } = virtualRect;
+const drawRect = ({ x1, y1, x2, y2 }, viewBox, fill) => {
+  // console.log(`draw ${x1} ${y1} ${x2} ${y2}`);
 
   x1 -= viewBox.offsetX;
   x2 -= viewBox.offsetX;
   y1 -= viewBox.offsetY;
   y2 -= viewBox.offsetY;
 
-  return <rect x={x1} y={y1} width={x2 - x1} height={y2 - y1}></rect>;
+  return (
+    <rect x={x1} y={y1} width={x2 - x1} height={y2 - y1} fill={fill}></rect>
+  );
+};
+
+const drawVirtualRect = (virtualRect, viewBox) => {
+  if (!virtualRect) {
+    return;
+  }
+  return drawRect(virtualRect, viewBox, "gray");
+};
+
+const drawClipRegion = (region, viewBox) => {
+  if (!region) {
+    return null;
+  }
+  return drawRect(region, viewBox, "green");
 };
 
 const Page = ({ rows, columns }) => {
   const { currentMove } = useSvgMoving();
   const { viewBox } = useViewBox();
-  const { virtualRect } = useClipContext();
+  const { virtualRect, clipRegion } = useClipContext();
   return (
     <div
       className="background-svg-container"
@@ -118,6 +130,7 @@ const Page = ({ rows, columns }) => {
         {drawColLines(columns, viewBox.height)}
         {drawMovingLine(currentMove, viewBox)}
         {drawVirtualRect(virtualRect, viewBox)}
+        {drawClipRegion(clipRegion, viewBox)}
       </svg>
     </div>
   );

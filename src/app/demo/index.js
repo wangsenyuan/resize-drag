@@ -23,7 +23,7 @@ const initLayout = {
   rows: initRows(30),
   columns: initCols(26),
   regions: [
-    { key: "first", r1: 0, c1: 0, r2: 4, c2: 2 },
+    { key: "first", r1: 1, c1: 1, r2: 4, c2: 2 },
     { key: "second", r1: 4, c1: 4, r2: 4, c2: 6 },
   ],
 };

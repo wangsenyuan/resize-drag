@@ -85,7 +85,7 @@ const layoutReducer = (state, { type, value }) => {
 
 const renderChild = (child) => {
   if (child.type === "input") {
-    return <input key={child.key} value="test" />;
+    return <input key={child.key} placeholder="test" />;
   }
   return null;
 };

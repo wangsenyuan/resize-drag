@@ -23,7 +23,7 @@ const createRect = (region, rowHeights, columnWidths) => {
   let left = columnWidths[c1];
   let height = rowHeights[r2 + 1] - top;
   let width = columnWidths[c2 + 1] - left;
-  return { top, left, height, width };
+  return { key: region.key, top, left, height, width };
 };
 
 const createRects = (regions, rowHeights, columnWidths) => {
@@ -42,19 +42,20 @@ const renderChildren = (children, rects) => {
     return null;
   }
   if (!Array.isArray(children)) {
-    if (!children.key || rects.has(children.key)) {
-      return null;
-    }
-    return <Region rect={rects.get(children.key)}>{children}</Region>;
+    children = [children];
   }
 
-  return children
-    .filter((child) => rects.has(child.key))
-    .map((child) => (
-      <Region key={child.key} rect={rects.get(child.key)}>
-        {child}
-      </Region>
-    ));
+  return children.map((child) => {
+    if (child.key && rects.has(child.key)) {
+      return (
+        <Region key={child.key} rect={rects.get(child.key)}>
+          {child}
+        </Region>
+      );
+    } else {
+      return child;
+    }
+  });
 };
 
 const renderBackground = (rows, columns, onChangeRow, onChangeColumn) => {
@@ -111,13 +112,13 @@ function inRegion(region, current) {
   );
 }
 
-function checkEmptyRegion(regions, current) {
+function findClickRegion(regions, current) {
   for (let i in regions) {
     if (inRegion(regions[i], current)) {
-      return false;
+      return regions[i];
     }
   }
-  return true;
+  return null;
 }
 
 const ResizableGrid = ({
@@ -158,16 +159,21 @@ const ResizableGrid = ({
     viewBox
   );
 
+  const selectedRegion = useMemo(() => {
+    if (!clipRegion) {
+      return null;
+    }
+    return findClickRegion(regions, clipRegion);
+  }, [regions, clipRegion]);
+
   const wrapOnClickEmptyRegion = useCallback(
     (evt) => {
-      if (!onClickEmptyRegion || !clipRegion) {
-        return null;
+      if (!onClickEmptyRegion || selectedRegion || !clipRegion) {
+        return;
       }
-      if (checkEmptyRegion(regions, clipRegion)) {
-        onClickEmptyRegion(evt, clipRegion);
-      }
+      onClickEmptyRegion(evt, clipRegion);
     },
-    [onClickEmptyRegion, regions, clipRegion]
+    [onClickEmptyRegion, selectedRegion, clipRegion]
   );
 
   const onGridClick = useClickAndDbClick(null, wrapOnClickEmptyRegion);

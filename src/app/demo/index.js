@@ -31,11 +31,13 @@ const initLayout = {
   children: [],
 };
 
-const updateRegion = (state, { key, region }) => {
+const updateRegion = (state, { key, fieldKey, fieldValue }) => {
   let { regions } = state;
   let newRegions = regions.map((cur) => {
     if (cur.key === key) {
-      return Object.assign({}, cur, { ...region });
+      let newObj = Object.assign({}, cur);
+      newObj[fieldKey] = fieldValue;
+      return newObj;
     }
     return cur;
   });

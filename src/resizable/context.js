@@ -17,3 +17,9 @@ export const ClipContext = React.createContext({});
 export function useClipContext() {
   return useContext(ClipContext);
 }
+
+export const RegionSelectionContext = React.createContext({});
+
+export function useRegionSelection() {
+  return useContext(RegionSelectionContext);
+}

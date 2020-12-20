@@ -1,40 +1,18 @@
 @import '../css-variables.scss';
 
-div.resizable-grid-background {
-  div.background {
-    border-collapse: collapse;
-    position: relative;
+div.resizable-grid-container {
+  border-collapse: collapse;
+  position: relative;
 
-    display: grid;
+  .top-left-corner {
+    border: 1px solid $border-color;
+  }
 
-    grid-template-columns: $header-row-width auto;
+  .header-columns-container {
+    display: flex;
 
-    grid-template-rows: $header-column-height auto;
-
-    .top-left-corner {
-      border: 1px solid $border-color;
-      grid-row: 1;
-      grid-column: 1;
-    }
-
-    .header-columns-container {
-      grid-row: 1;
-      grid-column: 2;
-      display: flex;
-
-      >.header-column {
-        flex: 0 0 auto;
-      }
-    }
-
-    .header-rows-container {
-      grid-row: 2;
-      grid-column: 1;
-    }
-
-    .background-svg-container {
-      grid-row: 2;
-      grid-column: 2;
+    >.header-column {
+      flex: 0 0 auto;
     }
   }
 }

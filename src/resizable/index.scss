@@ -1,12 +1,47 @@
+@import './css-variables.scss'
+
 div.resizable-grid-container {
   box-sizing: border-box;
+  border-collapse: collapse;
 
   * {
     box-sizing: border-box;
+    border-collapse: collapse;
+  }
+
+  display: grid;
+  grid-template-columns: 60px auto;
+
+  grid-template-rows: 50px auto;
+
+  grid-template-areas: "top-left header-columns"
+  "header-rows main";
+
+  .top-left-corner {
+    grid-area: top-left;
+  }
+
+  .header-columns-container {
+    grid-area: header-columns;
+  }
+
+  .header-rows-container {
+    grid-area: header-rows;
+  }
+
+  .background-svg-container {
+    grid-area: main;
+  }
+
+  .resiable-grid-background {
+    grid-area: main;
   }
 
   .resizable-grid {
     position: relative;
+    grid-area: main;
+    z-index: 1;
   }
+
 
 }

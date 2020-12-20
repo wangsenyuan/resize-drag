@@ -68,43 +68,36 @@ const renderBackground = (rows, columns, onChangeRow, onChangeColumn) => {
   );
 };
 
-const FIRST_HEIGHT = 50;
-const FIRST_WIDTH = 60;
-
 const createViewBox = (heights, widths, divRef) => {
   const [viewBox, setViewBox] = useState({
-    top: 0,
-    left: 0,
     heights,
     widths,
     width: last(widths),
     height: last(heights),
-    offsetX: FIRST_WIDTH,
-    offsetY: FIRST_HEIGHT,
+    offsetX: 0,
+    offsetY: 0,
   });
 
   useEffect(() => {
     if (divRef.current) {
       const div = divRef.current;
-      let { top, left } = getElementOffset(div);
-      top = Math.floor(top);
-      left = Math.floor(left);
-
+      let { offsetX, offsetY } = getElementOffset(div);
+      console.log("get offset {" + offsetX + ", " + offsetY + "}");
+      offsetX = Math.floor(offsetX);
+      offsetY = Math.floor(offsetY);
       setViewBox((viewBox) => {
         let newBox = Object.assign({}, viewBox, {
-          top,
-          left,
           heights,
           widths,
           width: last(widths),
           height: last(heights),
-          offsetX: FIRST_WIDTH + left,
-          offsetY: FIRST_HEIGHT + top,
+          offsetX,
+          offsetY,
         });
         return newBox;
       });
     }
-  }, [heights, widths, divRef, setViewBox]);
+  }, [heights, widths, divRef.current, setViewBox]);
 
   return viewBox;
 };
@@ -153,11 +146,9 @@ const ResizableGrid = ({
     [onChangeLayout]
   );
 
-  const ref = useRef(null);
-
-  const viewBox = createViewBox(prefRowHeights, prefColWidths, ref);
-
   const gridRef = useRef(null);
+
+  const viewBox = createViewBox(prefRowHeights, prefColWidths, gridRef);
 
   const { clipRegion } = useClipRegion(
     gridRef,
@@ -182,13 +173,11 @@ const ResizableGrid = ({
   const onGridClick = useClickAndDbClick(null, wrapOnClickEmptyRegion);
 
   return (
-    <div className={`resizable-grid-container`} ref={ref}>
+    <div className={`resizable-grid-container`}>
       <ViewBoxContext.Provider value={{ viewBox }}>
         <ClipContext.Provider value={{ clipRegion }}>
           <>
-            <div className={"resiable-grid-background"}>
-              {renderBackground(rows, columns, onChangeRow, onChangeColumn)}
-            </div>
+            {renderBackground(rows, columns, onChangeRow, onChangeColumn)}
             <div
               onClick={onGridClick}
               ref={gridRef}
@@ -196,8 +185,6 @@ const ResizableGrid = ({
               style={{
                 width: px(viewBox.width),
                 height: px(viewBox.height),
-                marginTop: `-${px(viewBox.height)}`,
-                marginLeft: `${px(FIRST_WIDTH)}`,
               }}
             >
               {renderChildren(children, rects)}

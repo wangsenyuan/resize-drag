@@ -13,19 +13,17 @@ const Page = ({ rows, columns, onChangeRow, onChangeColumn }) => {
   const [moving, setMoving] = useState(initMovingState);
 
   return (
-    <div className="resizable-grid-background">
-      <SvgMovingContext.Provider
-        value={{ currentMove: moving, onCurrentMove: setMoving }}
-      >
-        <div className="background">
-          <div className="top-left-corner grid-cell header-row header-column"></div>
-          <Columns columns={columns} onChange={onChangeColumn} />
-          <Rows rows={rows} onChange={onChangeRow} />
+    <SvgMovingContext.Provider
+      value={{ currentMove: moving, onCurrentMove: setMoving }}
+    >
+      <>
+        <div className="top-left-corner grid-cell header-row header-column"></div>
+        <Columns columns={columns} onChange={onChangeColumn} />
+        <Rows rows={rows} onChange={onChangeRow} />
 
-          <Content rows={rows} columns={columns} />
-        </div>
-      </SvgMovingContext.Provider>
-    </div>
+        <Content rows={rows} columns={columns} />
+      </>
+    </SvgMovingContext.Provider>
   );
 };
 

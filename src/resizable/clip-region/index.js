@@ -61,9 +61,7 @@ function regionToRect(region) {
 }
 
 function overlap(a, b) {
-  let res = b.x1 < a.x2 && b.y1 < a.y2 && a.x1 < b.x2 && a.y1 < b.y2;
-  // console.log(`overlap( ${JSON.stringify(a)}, ${JSON.stringify(b)}) => ${res}`);
-  return res;
+  return b.x1 < a.x2 && b.y1 < a.y2 && a.x1 < b.x2 && a.y1 < b.y2;
 }
 
 // rects is a map of {key, {top, left, width, height}}

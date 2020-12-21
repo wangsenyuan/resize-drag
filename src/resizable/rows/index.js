@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { px, max } from "../../utils";
+import { px, max } from "../utils";
 import "./index.scss";
-import { useSvgMoving } from "../../context";
+import { useSvgMoving } from "../context";
 
 function makeDragable(divRef, height, onMove, setMoving, onChange) {
   if (!divRef.current) {

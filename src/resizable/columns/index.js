@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./index.scss";
-import { useSvgMoving } from "../../context";
-import { px, max } from "../../utils";
+import { useSvgMoving } from "../context";
+import { px, max } from "../utils";
 
 function makeDragable(divRef, width, onMove, setMoving, onChange) {
   if (!divRef.current) {
@@ -84,9 +84,9 @@ function getLabel(index) {
   return String.fromCharCode(A.charCodeAt(0) + index);
 }
 
-const Page = ({ columns, onChange }) => {
+const Page = ({ columns, onChange, className }) => {
   return (
-    <div className="header-columns-container">
+    <div className={`header-columns-container ${className}`}>
       {columns.map((col, index) => {
         return (
           <Column

@@ -1,7 +1,7 @@
 import React from "react";
-import { px } from "../../utils";
+import { px } from "../utils";
 import "./index.scss";
-import { useClipContext, useSvgMoving, useViewBox } from "../../context";
+import { useClipContext, useSvgMoving, useViewBox } from "../context";
 
 const drawRowLines = (rows, width) => {
   let lines = [];
@@ -102,13 +102,13 @@ const drawClipRegion = (region, viewBox) => {
   return drawRect(region, viewBox, region.moving ? "gray" : "green");
 };
 
-const Page = ({ rows, columns }) => {
+const Page = ({ rows, columns, className }) => {
   const { currentMove } = useSvgMoving();
   const { viewBox } = useViewBox();
   const { clipRegion } = useClipContext();
   return (
     <div
-      className="background-svg-container"
+      className={`background-svg-container ${className}`}
       style={{ width: px(viewBox.width), height: px(viewBox.height) }}
     >
       <svg

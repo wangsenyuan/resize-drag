@@ -6,7 +6,9 @@ import React, {
   useState,
 } from "react";
 import Region from "./region";
-import Background from "./background";
+import Columns from "./columns";
+import Rows from "./rows";
+import SvgBackground from "./svg-background";
 import "./index.scss";
 import { partialSum, createAction, last, px, getElementOffset } from "./utils";
 import { ClipContext, ViewBoxContext } from "./context";
@@ -56,17 +58,6 @@ const renderChildren = (children, rects) => {
       return child;
     }
   });
-};
-
-const renderBackground = (rows, columns, onChangeRow, onChangeColumn) => {
-  return (
-    <Background
-      rows={rows}
-      columns={columns}
-      onChangeRow={onChangeRow}
-      onChangeColumn={onChangeColumn}
-    />
-  );
 };
 
 const createViewBox = (heights, widths, divRef) => {
@@ -183,23 +174,35 @@ const ResizableGrid = ({
       <ViewBoxContext.Provider value={{ viewBox }}>
         <ClipContext.Provider value={{ clipRegion }}>
           <>
-            {renderBackground(rows, columns, onChangeRow, onChangeColumn)}
-            <div
-              onClick={onGridClick}
-              ref={gridRef}
-              className="resizable-grid"
-              style={{
-                width: px(viewBox.width),
-                height: px(viewBox.height),
-              }}
-            >
-              {renderChildren(children, rects)}
+            <div className="header">
+              <Toolbar className="toolbars" />
+              <div className="top-left-corner"></div>
+              <Columns
+                className="columns"
+                onChange={onChangeColumn}
+                columns={columns}
+              />
+            </div>
+            <div className="main">
+              <Rows className="sidebar" rows={rows} onChange={onChangeRow} />
+              <SvgBackground
+                rows={rows}
+                columns={columns}
+                className="svg-background"
+              />
+              <div className="main" ref={gridRef} onClick={onGridClick}>
+                {renderChildren(children, rects)}
+              </div>
             </div>
           </>
         </ClipContext.Provider>
       </ViewBoxContext.Provider>
     </div>
   );
+};
+
+const Toolbar = ({ className }) => {
+  return <div className={className}></div>;
 };
 
 export default ResizableGrid;

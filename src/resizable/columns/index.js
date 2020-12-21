@@ -21,6 +21,7 @@ function makeDragable(divRef, width, onMove, setMoving, onChange) {
   function changeWidth(evt) {
     width = parseInt(max(10, evt.pageX - left));
     onMove(width, { x: evt.pageX, y: evt.pageY });
+    // evt.stopPropagation();
   }
 
   function stopChange() {

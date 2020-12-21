@@ -11,7 +11,7 @@ import Rows from "./rows";
 import SvgBackground from "./svg-background";
 import "./index.scss";
 import { partialSum, createAction, last, px, getElementOffset } from "./utils";
-import { ClipContext, ViewBoxContext } from "./context";
+import { ClipContext, SvgMovingContext, ViewBoxContext } from "./context";
 import { useClipRegion } from "./clip-region";
 import { useClickAndDbClick } from "@/hooks/wrap-click";
 
@@ -169,32 +169,40 @@ const ResizableGrid = ({
 
   const onGridClick = useClickAndDbClick(null, wrapOnClickEmptyRegion);
 
+  const [currentMove, setCurrentMove] = useState(null);
+
   return (
     <div className={`resizable-grid-container`}>
       <ViewBoxContext.Provider value={{ viewBox }}>
         <ClipContext.Provider value={{ clipRegion }}>
-          <>
-            <div className="header">
-              <Toolbar className="toolbars" />
-              <div className="top-left-corner"></div>
-              <Columns
-                className="columns"
-                onChange={onChangeColumn}
-                columns={columns}
-              />
-            </div>
-            <div className="main">
-              <Rows className="sidebar" rows={rows} onChange={onChangeRow} />
-              <SvgBackground
-                rows={rows}
-                columns={columns}
-                className="svg-background"
-              />
-              <div className="main" ref={gridRef} onClick={onGridClick}>
-                {renderChildren(children, rects)}
+          <SvgMovingContext.Provider
+            value={{ currentMove, onCurrentMove: setCurrentMove }}
+          >
+            <>
+              <div className="header">
+                <Toolbar className="toolbars" />
+                <div className="top-left-corner"></div>
+                <Columns
+                  className="columns"
+                  onChange={onChangeColumn}
+                  columns={columns}
+                />
               </div>
-            </div>
-          </>
+              <div className="main">
+                <Rows className="sidebar" rows={rows} onChange={onChangeRow} />
+                <div className="main">
+                  <SvgBackground
+                    rows={rows}
+                    columns={columns}
+                    className="svg-background"
+                  />
+                  <div className="main" ref={gridRef} onClick={onGridClick}>
+                    {renderChildren(children, rects)}
+                  </div>
+                </div>
+              </div>
+            </>
+          </SvgMovingContext.Provider>
         </ClipContext.Provider>
       </ViewBoxContext.Provider>
     </div>

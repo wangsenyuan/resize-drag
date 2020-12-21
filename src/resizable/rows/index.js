@@ -87,9 +87,9 @@ const Row = ({ row, label, onChange, index }) => {
   );
 };
 
-const Page = ({ rows, onChange }) => {
+const Page = ({ rows, onChange, className }) => {
   return (
-    <div className="header-rows-container">
+    <div className={`header-rows-container ${className}`}>
       {rows.map((row, index) => (
         <Row
           row={row}

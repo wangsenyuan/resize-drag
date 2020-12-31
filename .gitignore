@@ -26,3 +26,5 @@ src/env/local.js
 dist/
 .metals/
 .vscode/
+
+.idea/

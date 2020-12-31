@@ -13,7 +13,7 @@ div.resizable-grid-container {
 
   >.header {
     position: sticky;
-    top: 0;
+    top: var(--offset-y, 0);
     z-index: 2;
     padding: 0;
     grid-area: header;
@@ -21,13 +21,13 @@ div.resizable-grid-container {
     display: flex;
 
     .top-left-corner {
-      width: 50px;
+      width: 30px;
       border: 1px solid black;
       background-color: #ffffff;
       z-index: 3;
       position: sticky;
-      top: 0;
-      left: 0;
+      left: var(--offset-x, 0);
+      top: var(--offset-y, 0);
     }
 
     >* {
@@ -36,23 +36,24 @@ div.resizable-grid-container {
   }
 
   >.main {
+
     grid-area: main;
     padding: 0;
     padding-top: 0;
     display: flex;
 
     >.sidebar {
-      width: 50px;
-      flex: 0 0 auto;
+      flex: 0 0 30px;
       position: sticky;
-      left: 0;
+      left: var(--offset-x, 0);
       z-index: 2;
       background-color: #ffffff;
     }
 
 
     >.main {
-      width: calc(100% - 50px);
+      width: calc(100% - 30px);
+      flex: 1 0 auto;
       border: none;
       display: grid;
 

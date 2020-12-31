@@ -2,6 +2,8 @@ import React, { useReducer, useCallback } from "react";
 
 import ResizableGrid from "@/resizable";
 import { createAction } from "../../resizable/utils";
+import "./index.scss";
+
 const initRows = (count) => {
   let height = 50;
   let res = [];
@@ -113,6 +115,8 @@ const renderLayoutChildren = (layout) => {
     </div>
   );
 
+  res.push(<div>no key</div>);
+
   return res;
 };
 
@@ -129,14 +133,17 @@ const Page = () => {
 
   return (
     <>
-      <div>这是操作区域上面</div>
-      <ResizableGrid
-        layout={layout}
-        onChangeLayout={dispatch}
-        onClickEmptyRegion={onAddText}
-      >
-        {renderLayoutChildren(layout)}
-      </ResizableGrid>
+      <div className="demo-grid-area">
+        <div className="sidebar">这是操作区域上面</div>
+        <ResizableGrid
+          className="resizable-grid"
+          layout={layout}
+          onChangeLayout={dispatch}
+          onClickEmptyRegion={onAddText}
+        >
+          {renderLayoutChildren(layout)}
+        </ResizableGrid>
+      </div>
       <div>这在操作区域下面</div>
     </>
   );

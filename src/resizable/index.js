@@ -117,6 +117,7 @@ const ResizableGrid = ({
   onChangeLayout,
   children,
   onClickEmptyRegion,
+  className,
 }) => {
   const prefRowHeights = memoPartialSum(rows, 0, (row) => row.height);
 
@@ -171,8 +172,20 @@ const ResizableGrid = ({
 
   const [currentMove, setCurrentMove] = useState(null);
 
+  const containerRef = useRef();
+
+  useEffect(() => {
+    if (!containerRef.current) {
+      return;
+    }
+    let div = containerRef.current;
+    let { offsetX, offsetY } = getElementOffset(div);
+    div.style.setProperty("--offset-x", px(offsetX));
+    div.style.setProperty("--offset-y", px(offsetY));
+  }, [containerRef.current]);
+
   return (
-    <div className={`resizable-grid-container`}>
+    <div className={`resizable-grid-container ${className}`} ref={containerRef}>
       <ViewBoxContext.Provider value={{ viewBox }}>
         <ClipContext.Provider value={{ clipRegion }}>
           <SvgMovingContext.Provider

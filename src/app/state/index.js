@@ -1,64 +1,79 @@
-import React from 'react'
-import {atom, atomFamily, selector, selectorFamily, noWait} from "recoil";
-
-
+import React, { useContext, useReducer } from "react";
+import { useMemo } from "react";
 // 拖入Editor的组件是atom（通过atomFamily构建），
 // 选中id，通过selectorFamily传递给其他组件；
 // 拖入的时候直接保存到后端，产生新的id；
 
-
-export const selectedControlId = atom({
-    key: "atom/selectedControlId",
-    default: -1
-})
-
-export const currentControl = selector({
-    key: "selector/currentControl",
-    get: ({get}) => {
-        const id = get(selectedControlId)
-        if (id < 0) {
-            return {}
-        }
-        return get(control(id));
-    },
-    set: ({set, get}, newValue) => {
-        set(control(get(selectedControlId)), prev => Object.assign({}, prev, newValue))
-    }
-})
-
-async function getControl(id) {
-    return new Promise(resolve => {
-        let container = {
-            rows: Array(100).fill(60),
-            columns: Array(26).fill(100)
-        }
-        setTimeout(() => resolve(container), 1000)
-    })
+function stateReducer(state, { type, value }) {
+  return state;
 }
 
-export const control = selectorFamily({
-    key: "atom/control",
-    default: (id) => async () => {
-        let container = await getControl(id)
-        return container
-    }
-})
+export const CONTROLE_TYPES = {
+  CONTAINER: "container",
+  FIELD: "field",
+  LABEL: "label",
+};
 
+const initState = {
+  key: "root",
+  type: CONTROLE_TYPES.CONTAINER,
+  rows: Array(100).fill(60),
+  columns: Array(26).fill(100),
+  properties: {
+    x: 0,
+    y: 0,
+    w: 26,
+    h: 100,
+  },
+  children: [],
+};
+// children are also controls,
 
-export const grid = selectorFamily({
-    key: "selector/grid",
-    get: containerId => ({get}) => {
-        // containerId should be -1
-        let loadable = get(noWait(control(containerId)))
-        return {
-            hasValue: {data: loadable.contents},
-            hasError: {error: loadable.contents},
-            loading: {data: 'placeholder while loading'},
-        }[loadable.state];
-    }
-})
+function getInitState(init) {
+  if (!init) {
+    return initState;
+  }
+  return Object.assign({}, initState, init);
+}
 
-export const viewBox = atom({
-    key: "atom/viewBox",
-    default: {width: 2000, height: 2000}
-})
+export function createAction(type, value) {
+  return { type, value };
+}
+
+export const StateContext = React.createContext({});
+
+export const createPrintState = (initialValue) => {
+  const [state, dispatch] = useReducer(
+    stateReducer,
+    initialValue,
+    getInitState
+  );
+
+  const value = useMemo(() => {
+    return {
+      dispatch,
+    };
+  }, [dispatch]);
+
+  return { state, stateContext: value };
+};
+
+export const useStateContext = () => {
+  return useContext(StateContext);
+};
+
+export const ViewBoxContext = React.createContext({});
+
+export function createViewBox(rows, columns) {
+  const viewBox = useMemo(() => {
+    let width = columns.reduce((a, b) => a + b, 0);
+    let height = rows.reduce((a, b) => a + b, 0);
+    return { width, height, rows, columns };
+  }, [rows, columns]);
+
+  return viewBox;
+}
+
+export const useViewBox = () => {
+  return useContext(ViewBoxContext);
+};

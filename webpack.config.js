@@ -10,6 +10,7 @@ const assets_dir = process.env.ASSETS_DIR;
 const html_title = process.env.HTML_TITLE;
 const isProd = process.env.NODE_ENV.indexOf("local") === -1;
 const cdn = process.env.CDN || "";
+
 // const cdn = ''
 
 function resolve(dir) {
@@ -19,7 +20,7 @@ function resolve(dir) {
 let config = {
   mode: "development",
   entry: {
-    main: path.resolve(__dirname, "./src/index.js.js"),
+    main: path.resolve(__dirname, "./src/index.js"),
   },
   output: {
     path: path.join(__dirname, "dist"),
@@ -36,7 +37,7 @@ let config = {
     }),
     new HtmlWebpackPlugin({
       // favicon: "./src/assets/" + assets_dir + "/favicon.ico",
-      template: "./index.js.html",
+      template: "./index.html",
       hash: true,
       inject: true,
       title: `${html_title}`,

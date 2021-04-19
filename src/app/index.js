@@ -1,14 +1,16 @@
 import React from "react";
+import {RecoilRoot} from 'recoil'
 
-// import Demo from "./demo";
-import Demo from "./ws-demo";
+import StateTest from './state/state-test'
 
 const App = () => {
-  return (
-    <div>
-      <Demo />
-    </div>
-  );
+    return (
+        <RecoilRoot>
+            <div>
+                <StateTest/>
+            </div>
+        </RecoilRoot>
+    );
 };
 
 export default App;

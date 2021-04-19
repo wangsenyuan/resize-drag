@@ -19,7 +19,7 @@ function resolve(dir) {
 let config = {
   mode: "development",
   entry: {
-    main: path.resolve(__dirname, "./src/index.js"),
+    main: path.resolve(__dirname, "./src/index.js.js"),
   },
   output: {
     path: path.join(__dirname, "dist"),
@@ -29,7 +29,6 @@ let config = {
   plugins: [
     new webpack.DefinePlugin({
       NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-      "process.env.NODE_ENV": JSON.stringify(isProd ? "production" : "local"),
     }),
     new MiniCssExtractPlugin({
       filename: !isProd ? "[name].css" : `[name].[hash].css`,
@@ -37,7 +36,7 @@ let config = {
     }),
     new HtmlWebpackPlugin({
       // favicon: "./src/assets/" + assets_dir + "/favicon.ico",
-      template: "./index.html",
+      template: "./index.js.html",
       hash: true,
       inject: true,
       title: `${html_title}`,
@@ -75,7 +74,6 @@ let config = {
     extensions: [".js"],
     alias: {
       appEnv: resolve("src/env/" + process.env.NODE_ENV + ".js"),
-      "mk-assets-scss": resolve("src/assets/" + assets_dir + "/index.scss"),
       "@": resolve("src"),
     },
   },
@@ -119,6 +117,8 @@ if (isProd) {
     port: 8005,
     host: "0.0.0.0",
   };
+  // config.target = web 可以解决web里面HMR不工作的情况
+  config.target = "web";
   config.devtool = "inline-source-map";
   config.mode = "development";
   config.plugins.push(new webpack.HotModuleReplacementPlugin());

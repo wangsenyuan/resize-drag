@@ -109,7 +109,6 @@ export const createAuxiliaryLineContext = () => {
   const value = useMemo(() => {
     return {
       set: (dir, position) => {
-        console.log(`will set auxiliary line ${dir} ${position}`);
         setState({ dir, position });
       },
     };

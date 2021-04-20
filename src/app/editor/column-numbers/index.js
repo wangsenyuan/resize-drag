@@ -24,7 +24,6 @@ function makeDragable(divRef, width, onMove, onChange) {
 
   function changeWidth(evt) {
     width = parseInt(max(10, evt.pageX - left));
-    console.log(`changeWidth()`);
     onMove?.(width, { x: evt.pageX });
   }
 
@@ -88,7 +87,7 @@ const Column = ({ index, column, label }) => {
       if (done) {
         auxiliaryLine.set(AuxliiaryLineDirs.none, pos);
       } else {
-        auxiliaryLine.set(AuxliiaryLineDirs.vertical, parseInt(pos - 8));
+        auxiliaryLine.set(AuxliiaryLineDirs.vertical, parseInt(pos));
       }
     },
     [auxiliaryLine]
@@ -96,7 +95,6 @@ const Column = ({ index, column, label }) => {
 
   const wrapMove = useCallback(
     (width, current) => {
-      console.log(`onMove ${width} ${JSON.stringify(current)}`);
       onAuxiliaryLineMove?.(current?.x);
       setWidth(width);
     },
@@ -105,7 +103,6 @@ const Column = ({ index, column, label }) => {
 
   const wrapChange = useCallback(
     (width) => {
-      console.log(`will change(${index}, ${width})`);
       onChange?.(index, width);
       onAuxiliaryLineMove?.(0, true);
     },

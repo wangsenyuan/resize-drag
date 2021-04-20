@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import FullDiv from "@/components/full-div";
 import styled from "styled-components";
 import { AuxliiaryLineDirs, useGetAuxiliaryLine } from "../../state";
+import { getElementOffset } from "../../../utils";
 
 const PageDiv = styled.div`
   position: absolute;
@@ -12,12 +13,12 @@ const PageDiv = styled.div`
   right: 0;
 `;
 
-function AuxiliaryLine({ line }) {
+function AuxiliaryLine({ line, offset }) {
   if (line.dir === AuxliiaryLineDirs.vertical) {
     return (
       <line
-        x1={`${line.position}`}
-        x2={`${line.position}`}
+        x1={`${line.position - offset.offsetLeft}`}
+        x2={`${line.position - offset.offsetLeft}`}
         y1={"0"}
         y2={`2000px`}
         stroke="black"
@@ -31,8 +32,8 @@ function AuxiliaryLine({ line }) {
       <line
         x1={`0`}
         x2={`2000px`}
-        y1={`${line.position}`}
-        y2={`${line.position}`}
+        y1={`${line.position - offset.offsetTop}`}
+        y2={`${line.position - offset.offsetTop}`}
         stroke="black"
         strokeWidth="1"
         strokeLinecap="round"
@@ -46,17 +47,27 @@ function AuxiliaryLine({ line }) {
 
 function Page({ className }) {
   const auxiliaryLine = useGetAuxiliaryLine();
+  const ref = useRef(null);
+  const [offset, setOffset] = useState({ offsetTop: 0, offsetLeft: 0 });
+
+  useEffect(() => {
+    if (ref.current) {
+      let offset = getElementOffset(ref.current);
+      console.log(`auxiliary page offset is ${JSON.stringify(offset)}`);
+      setOffset(offset);
+    }
+  }, [setOffset, ref.current]);
 
   return (
     <PageDiv className={className}>
-      <FullDiv>
+      <FullDiv ref={ref}>
         <svg
           width={"100%"}
           height={"100%"}
           xmlns="http://www.w3.org/2000/svg"
-          viewBox={`0 0 100% 100%`}
+          preserveAspectRatio="none"
         >
-          <AuxiliaryLine line={auxiliaryLine} />
+          <AuxiliaryLine line={auxiliaryLine} offset={offset} />
         </svg>
       </FullDiv>
     </PageDiv>

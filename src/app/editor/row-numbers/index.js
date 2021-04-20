@@ -24,7 +24,6 @@ function makeDragable(divRef, height, onMove, onChange) {
 
   function changeHeight(evt) {
     height = parseInt(max(10, evt.pageY - top));
-    console.log("changeHeight()");
     onMove(height, { y: evt.pageY });
   }
 
@@ -93,7 +92,7 @@ const Row = ({ row, label, index }) => {
       if (done) {
         auxiliaryLine.set(AuxliiaryLineDirs.none, pos);
       } else {
-        auxiliaryLine.set(AuxliiaryLineDirs.horizontal, parseInt(pos - 8));
+        auxiliaryLine.set(AuxliiaryLineDirs.horizontal, parseInt(pos));
       }
     },
     [auxiliaryLine]

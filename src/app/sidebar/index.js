@@ -1,7 +1,7 @@
 import React from "react";
 
-function Toolbar({ className }) {
+function Page({ className }) {
   return <div className={`${className ?? ""}`}></div>;
 }
 
-export default Toolbar;
+export default Page;

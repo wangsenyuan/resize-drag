@@ -1,12 +1,8 @@
-import React, { useContext, useReducer } from "react";
+import React, { useContext, useReducer, useState } from "react";
 import { useMemo } from "react";
 // 拖入Editor的组件是atom（通过atomFamily构建），
 // 选中id，通过selectorFamily传递给其他组件；
 // 拖入的时候直接保存到后端，产生新的id；
-
-function stateReducer(state, { type, value }) {
-  return state;
-}
 
 export const CONTROLE_TYPES = {
   CONTAINER: "container",
@@ -36,11 +32,29 @@ function getInitState(init) {
   return Object.assign({}, initState, init);
 }
 
+function changeColumnWidth(state, { index, value }) {
+  let { columns } = state;
+  columns = [...columns.slice(0, index), value, ...columns.slice(index + 1)];
+  return Object.assign({}, state, { columns });
+}
+
+function stateReducer(state, { type, value }) {
+  switch (type) {
+    case STATE_ACTIONS.CHANGE_WIDTH:
+      return changeColumnWidth(state, value);
+  }
+  return state;
+}
+
+export const STATE_ACTIONS = {
+  CHANGE_WIDTH: "change-width",
+};
+
 export function createAction(type, value) {
   return { type, value };
 }
 
-export const StateContext = React.createContext({});
+export const SetStateContext = React.createContext({});
 
 export const createPrintState = (initialValue) => {
   const [state, dispatch] = useReducer(
@@ -51,16 +65,47 @@ export const createPrintState = (initialValue) => {
 
   const value = useMemo(() => {
     return {
-      dispatch,
+      changeWidth: (index, value) =>
+        dispatch({ type: STATE_ACTIONS.CHANGE_WIDTH, value: { index, value } }),
     };
   }, [dispatch]);
 
-  return { state, stateContext: value };
+  return { state, context: value };
 };
 
-export const useStateContext = () => {
-  return useContext(StateContext);
+export const useSetStateContext = () => {
+  return useContext(SetStateContext);
 };
+
+export const AuxliiaryLineDirs = {
+  horizontal: 0,
+  vertical: 1,
+  none: -1,
+};
+
+export const AuxiliaryLine = React.createContext({});
+export const SetAuxiliaryLine = React.createContext({});
+
+export const createAuxiliaryLineContext = () => {
+  const [state, setState] = useState({
+    dir: AuxliiaryLineDirs.none,
+    position: -1,
+  });
+
+  const value = useMemo(() => {
+    return {
+      set: (dir, position) => {
+        console.log(`will set auxiliary line ${dir} ${position}`);
+        setState({ dir, position });
+      },
+    };
+  }, [setState]);
+
+  return { state, context: value };
+};
+
+export const useSetAuxiliaryLine = () => useContext(SetAuxiliaryLine);
+export const useGetAuxiliaryLine = () => useContext(AuxiliaryLine);
 
 export const ViewBoxContext = React.createContext({});
 

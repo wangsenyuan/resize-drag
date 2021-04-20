@@ -1,5 +1,9 @@
 import React from "react";
-import { useViewBox } from "../../state";
+import {
+  useViewBox,
+  useGetAuxiliaryLine,
+  AuxliiaryLineDirs,
+} from "../../../state";
 import styled from "styled-components";
 
 function createHorizontalLines(width) {
@@ -75,6 +79,38 @@ function VerticalLines({ columns, height }) {
   );
 }
 
+function AuxiliaryLine({ line, width, height }) {
+  if (line.dir === AuxliiaryLineDirs.vertical) {
+    return (
+      <line
+        x1={`${line.position}`}
+        x2={`${line.position}`}
+        y1={"0"}
+        y2={`${height}`}
+        stroke="black"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeDasharray="1"
+      />
+    );
+  } else if (line.dir === AuxliiaryLineDirs.horizontal) {
+    return (
+      <line
+        x1={`0`}
+        x2={`${width}`}
+        y1={`${line.position}`}
+        y2={`${line.position}`}
+        stroke="black"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeDasharray="1"
+      />
+    );
+  }
+
+  return null;
+}
+
 const PageDiv = styled.div`
   position: absoluate;
   top: 0;
@@ -85,6 +121,7 @@ const PageDiv = styled.div`
 
 function Page() {
   const viewBox = useViewBox();
+  const auxiliaryLine = useGetAuxiliaryLine();
 
   return (
     <PageDiv className="grid">
@@ -96,6 +133,11 @@ function Page() {
       >
         <HorizontalLines rows={viewBox.rows} width={viewBox.width} />
         <VerticalLines columns={viewBox.columns} height={viewBox.height} />
+        <AuxiliaryLine
+          line={auxiliaryLine}
+          width={viewBox.width}
+          height={viewBox.height}
+        />
       </svg>
     </PageDiv>
   );

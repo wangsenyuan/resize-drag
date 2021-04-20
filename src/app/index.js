@@ -4,6 +4,11 @@ import Editor from "./editor";
 import ErrorBoundary from "@/components/error-boundary";
 import FullDiv from "@/components/full-div";
 import { createPrintState, SetStateContext } from "./state";
+import styled from "styled-components";
+
+const AppDiv = styled(FullDiv)`
+  padding: 10px;
+`;
 
 const App = () => {
   const { state, context } = createPrintState();
@@ -11,10 +16,10 @@ const App = () => {
   return (
     <ErrorBoundary>
       <SetStateContext.Provider value={context}>
-        <FullDiv className="main-container">
+        <AppDiv className="main-container">
           <Toolbar className="header" />
           <Editor className="editor" state={state} />
-        </FullDiv>
+        </AppDiv>
       </SetStateContext.Provider>
     </ErrorBoundary>
   );

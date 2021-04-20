@@ -55,11 +55,11 @@ export const createAction = (type, value) => {
   return { type, value };
 };
 
-export const getElementOffset = (elem) => {
+export const getElementOffset = (elem, level = -1) => {
   let offsetLeft = 0;
   let offsetTop = 0;
 
-  while (elem) {
+  while (elem && level != 0) {
     if (!isNaN(elem.offsetLeft)) {
       offsetLeft += elem.offsetLeft;
     }
@@ -67,7 +67,10 @@ export const getElementOffset = (elem) => {
       offsetTop += elem.offsetTop;
     }
     elem = elem.offsetParent;
+    level--;
   }
-  
-  return { offsetY: offsetTop, offsetX: offsetLeft };
+
+  console.log("getElementOffset end");
+
+  return { offsetTop, offsetLeft };
 };

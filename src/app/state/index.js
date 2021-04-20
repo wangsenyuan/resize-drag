@@ -38,16 +38,25 @@ function changeColumnWidth(state, { index, value }) {
   return Object.assign({}, state, { columns });
 }
 
+function changeRowHeight(state, { index, value }) {
+  let { rows } = state;
+  rows = [...rows.slice(0, index), value, ...rows.slice(index + 1)];
+  return Object.assign({}, state, { rows });
+}
+
 function stateReducer(state, { type, value }) {
   switch (type) {
     case STATE_ACTIONS.CHANGE_WIDTH:
       return changeColumnWidth(state, value);
+    case STATE_ACTIONS.CHANGE_HEIGHT:
+      return changeRowHeight(state, value);
   }
   return state;
 }
 
 export const STATE_ACTIONS = {
-  CHANGE_WIDTH: "change-width",
+  CHANGE_WIDTH: 0,
+  CHANGE_HEIGHT: 1,
 };
 
 export function createAction(type, value) {
@@ -67,6 +76,11 @@ export const createPrintState = (initialValue) => {
     return {
       changeWidth: (index, value) =>
         dispatch({ type: STATE_ACTIONS.CHANGE_WIDTH, value: { index, value } }),
+      changeHeight: (index, value) =>
+        dispatch({
+          type: STATE_ACTIONS.CHANGE_HEIGHT,
+          value: { index, value },
+        }),
     };
   }, [dispatch]);
 

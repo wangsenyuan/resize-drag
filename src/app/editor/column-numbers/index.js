@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { px, max } from "@/utils";
+import { px, max, getElementOffset } from "@/utils";
 import styled from "styled-components";
 import {
   useSetStateContext,
   useSetAuxiliaryLine,
   AuxliiaryLineDirs,
 } from "../../state";
+import { offEditorScroll, onEditorScroll } from "../events";
 
 function makeDragable(divRef, width, onMove, onChange) {
   if (!divRef.current) {
@@ -23,8 +24,8 @@ function makeDragable(divRef, width, onMove, onChange) {
 
   function changeWidth(evt) {
     width = parseInt(max(10, evt.pageX - left));
-    onMove?.(width, { x: evt.pageX, y: evt.pageY });
-    // evt.stopPropagation();
+    console.log(`changeWidth()`);
+    onMove?.(width, { x: evt.pageX });
   }
 
   function stopChange() {
@@ -50,10 +51,10 @@ const ColumnCell = styled.div`
   .right-border {
     position: absolute;
     height: 100%;
-    width: 3px;
+    width: 2px;
     z-index: 1;
     top: 0;
-    right: 0;
+    right: -1px;
 
     &:hover {
       cursor: col-resize;
@@ -65,7 +66,7 @@ const ColumnCell = styled.div`
 const ColumnsContainer = styled.div`
   display: flex;
   flex-wrap: nowrap;
-
+  position: relative;
   background-color: #ffffff;
 
   & > * {
@@ -87,7 +88,7 @@ const Column = ({ index, column, label }) => {
       if (done) {
         auxiliaryLine.set(AuxliiaryLineDirs.none, pos);
       } else {
-        auxiliaryLine.set(AuxliiaryLineDirs.vertical, parseInt(pos));
+        auxiliaryLine.set(AuxliiaryLineDirs.vertical, parseInt(pos - 8));
       }
     },
     [auxiliaryLine]
@@ -130,8 +131,21 @@ function getLabel(index) {
 }
 
 const Page = ({ columns, className }) => {
+  const divRef = useRef(null);
+
+  useEffect(() => {
+    function fn({ scrollLeft }) {
+      divRef.current.scrollLeft = scrollLeft;
+    }
+    onEditorScroll(fn);
+
+    return () => {
+      offEditorScroll(fn);
+    };
+  }, [divRef]);
+
   return (
-    <ColumnsContainer className={`${className ?? ""}`}>
+    <ColumnsContainer className={`${className ?? ""}`} ref={divRef}>
       {columns.map((col, index) => {
         return (
           <Column

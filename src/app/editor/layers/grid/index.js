@@ -1,5 +1,5 @@
 import React from "react";
-import { useViewBox, useGetAuxiliaryLine } from "../../../state";
+import { useViewBox } from "../../editor-context";
 import styled from "styled-components";
 
 function createHorizontalLines(width) {

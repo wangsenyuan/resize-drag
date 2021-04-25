@@ -11,17 +11,21 @@ export const CONTROLE_TYPES = {
 };
 
 const initState = {
-  key: "root",
-  type: CONTROLE_TYPES.CONTAINER,
-  rows: Array(100).fill(60),
-  columns: Array(26).fill(100),
-  properties: {
-    x: 0,
-    y: 0,
-    w: 26,
-    h: 100,
+  layout: {
+    rows: Array(100).fill(60),
+    columns: Array(26).fill(100),
   },
-  children: [],
+  container: {
+    key: "root",
+    type: CONTROLE_TYPES.CONTAINER,
+    properties: {
+      x1: 0,
+      y1: 0,
+      x2: 26,
+      y2: 100,
+    },
+    children: [],
+  },
 };
 // children are also controls,
 
@@ -33,15 +37,20 @@ function getInitState(init) {
 }
 
 function changeColumnWidth(state, { index, value }) {
-  let { columns } = state;
+  let { layout } = state;
+  let { columns } = layout;
   columns = [...columns.slice(0, index), value, ...columns.slice(index + 1)];
-  return Object.assign({}, state, { columns });
+  return Object.assign({}, state, {
+    layout: Object.assign({}, layout, { columns }),
+  });
 }
 
 function changeRowHeight(state, { index, value }) {
-  let { rows } = state;
+  let { layout } = state;
+  let { rows } = layout;
   rows = [...rows.slice(0, index), value, ...rows.slice(index + 1)];
-  return Object.assign({}, state, { rows });
+  layout = Object.assign({}, layout, { rows });
+  return Object.assign({}, state, { layout });
 }
 
 function stateReducer(state, { type, value }) {
@@ -62,8 +71,6 @@ export const STATE_ACTIONS = {
 export function createAction(type, value) {
   return { type, value };
 }
-
-export const SetStateContext = React.createContext({});
 
 export const createPrintState = (initialValue) => {
   const [state, dispatch] = useReducer(
@@ -87,51 +94,8 @@ export const createPrintState = (initialValue) => {
   return { state, context: value };
 };
 
+export const SetStateContext = React.createContext({});
+
 export const useSetStateContext = () => {
   return useContext(SetStateContext);
-};
-
-export const AuxliiaryLineDirs = {
-  horizontal: 0,
-  vertical: 1,
-  none: -1,
-};
-
-export const AuxiliaryLine = React.createContext({});
-export const SetAuxiliaryLine = React.createContext({});
-
-export const createAuxiliaryLineContext = () => {
-  const [state, setState] = useState({
-    dir: AuxliiaryLineDirs.none,
-    position: -1,
-  });
-
-  const value = useMemo(() => {
-    return {
-      set: (dir, position) => {
-        setState({ dir, position });
-      },
-    };
-  }, [setState]);
-
-  return { state, context: value };
-};
-
-export const useSetAuxiliaryLine = () => useContext(SetAuxiliaryLine);
-export const useGetAuxiliaryLine = () => useContext(AuxiliaryLine);
-
-export const ViewBoxContext = React.createContext({});
-
-export function createViewBox(rows, columns) {
-  const viewBox = useMemo(() => {
-    let width = columns.reduce((a, b) => a + b, 0);
-    let height = rows.reduce((a, b) => a + b, 0);
-    return { width, height, rows, columns };
-  }, [rows, columns]);
-
-  return viewBox;
-}
-
-export const useViewBox = () => {
-  return useContext(ViewBoxContext);
 };

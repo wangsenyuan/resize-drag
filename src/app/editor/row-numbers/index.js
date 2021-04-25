@@ -1,10 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { px, max } from "@/utils";
-import {
-  AuxliiaryLineDirs,
-  useSetAuxiliaryLine,
-  useSetStateContext,
-} from "../../state";
+import { AuxliiaryLineDirs, useSetAuxiliaryLine } from "../editor-context";
+import { useSetStateContext } from "../../state";
 import styled from "styled-components";
 import { offEditorScroll, onEditorScroll } from "../events";
 
@@ -83,8 +80,6 @@ const Row = ({ row, label, index }) => {
 
   const stateContext = useSetStateContext();
 
-  const onChange = stateContext.changeHeight;
-
   const auxiliaryLine = useSetAuxiliaryLine();
 
   const onCurrentMove = useCallback(
@@ -108,10 +103,10 @@ const Row = ({ row, label, index }) => {
 
   const wrapChange = useCallback(
     (height) => {
-      onChange?.(index, height);
+      stateContext.changeHeight?.(index, height);
       onCurrentMove?.(0, true);
     },
-    [onChange, onCurrentMove, index]
+    [stateContext, onCurrentMove, index]
   );
 
   useEffect(() => {

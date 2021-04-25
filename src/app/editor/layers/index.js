@@ -3,7 +3,7 @@ import Grid from "./grid";
 import Paper from "./paper";
 import styled from "styled-components";
 import FullDiv from "@/components/full-div";
-import { useViewBox } from "../../state";
+import { useViewBox } from "../editor-context";
 import { px } from "@/utils";
 import { scrollEditor } from "../events";
 

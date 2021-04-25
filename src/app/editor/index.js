@@ -8,7 +8,8 @@ import {
   AuxiliaryLine,
   SetAuxiliaryLine,
   createAuxiliaryLineContext,
-} from "../state";
+} from "./editor-context";
+
 import Columns from "./column-numbers";
 import Rows from "./row-numbers";
 import styled from "styled-components";
@@ -77,7 +78,8 @@ const TopLeft = styled.div`
 `;
 
 function Editor({ className, state }) {
-  const viewBox = createViewBox(state.rows, state.columns);
+  const { layout } = state;
+  const viewBox = createViewBox(layout.rows, layout.columns);
   const auxiliaryLine = createAuxiliaryLineContext();
 
   return (
@@ -88,10 +90,10 @@ function Editor({ className, state }) {
             <AuxiliaryLinePage className="auxiliary-line-wraper" />
             <Header className="header-wraper">
               <TopLeft />
-              <Columns columns={state.columns} className="header-columns" />
+              <Columns columns={layout.columns} className="header-columns" />
             </Header>
             <Content className="content-wraper">
-              <Rows rows={state.rows} className="row-numbers" />
+              <Rows rows={layout.rows} className="row-numbers" />
               <Layers className="content" />
             </Content>
           </EditorDiv>

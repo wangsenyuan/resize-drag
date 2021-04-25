@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 
 import FullDiv from "@/components/full-div";
 import styled from "styled-components";
-import { AuxliiaryLineDirs, useGetAuxiliaryLine } from "../../state";
-import { getElementOffset } from "../../../utils";
+import { AuxliiaryLineDirs, useGetAuxiliaryLine } from "../editor-context";
+import { getElementOffset } from "@/utils";
 
 const PageDiv = styled.div`
   position: absolute;
@@ -53,7 +53,6 @@ function Page({ className }) {
   useEffect(() => {
     if (ref.current) {
       let offset = getElementOffset(ref.current);
-      console.log(`auxiliary page offset is ${JSON.stringify(offset)}`);
       setOffset(offset);
     }
   }, [setOffset, ref.current]);

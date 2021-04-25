@@ -1,11 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { px, max, getElementOffset } from "@/utils";
+import { px, max } from "@/utils";
 import styled from "styled-components";
-import {
-  useSetStateContext,
-  useSetAuxiliaryLine,
-  AuxliiaryLineDirs,
-} from "../../state";
+import { useSetAuxiliaryLine, AuxliiaryLineDirs } from "../editor-context";
+import { useSetStateContext } from "../../state";
+
 import { offEditorScroll, onEditorScroll } from "../events";
 
 function makeDragable(divRef, width, onMove, onChange) {
@@ -67,7 +65,6 @@ const ColumnsContainer = styled.div`
   flex-wrap: nowrap;
   position: relative;
   background-color: #ffffff;
-
   & > * {
     flex: 0 0 auto;
   }
@@ -76,9 +73,6 @@ const ColumnsContainer = styled.div`
 const Column = ({ index, column, label }) => {
   const ref = useRef(null);
   const [width, setWidth] = useState(column);
-  const stateContext = useSetStateContext();
-
-  const onChange = stateContext.changeWidth;
 
   const auxiliaryLine = useSetAuxiliaryLine();
 
@@ -101,12 +95,14 @@ const Column = ({ index, column, label }) => {
     [onAuxiliaryLineMove, setWidth]
   );
 
+  const stateContext = useSetStateContext();
+
   const wrapChange = useCallback(
     (width) => {
-      onChange?.(index, width);
+      stateContext.changeWidth(index, width);
       onAuxiliaryLineMove?.(0, true);
     },
-    [onAuxiliaryLineMove, onChange, index]
+    [onAuxiliaryLineMove, stateContext, index]
   );
 
   useEffect(() => {

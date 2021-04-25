@@ -48,7 +48,16 @@ let config = {
     rules: [
       {
         test: /\.(scss|css)$/,
-        use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"],
+        use: ["style-loader", 
+        {
+          loader: "css-loader",
+          options: {
+            modules: {
+              localIdentName: "[local]---[hash:base64:5]"
+            },
+            
+          },
+        }, "postcss-loader", "sass-loader"],
       },
       {
         test: /\.(?:ico|gif|png|jpg|jpeg)$/i,

@@ -16,6 +16,8 @@ import styled from "styled-components";
 
 import AuxiliaryLinePage from "./auxiliary-lines";
 
+import Dustbin from '../dragBox/targetBox';
+
 const row_number_width = 50;
 const col_number_height = 40;
 
@@ -95,7 +97,7 @@ function Editor({ className, state }) {
             <Content className="content-wraper">
               <Rows rows={layout.rows} className="row-numbers" />
               <Layers className="content" />
-            </Content>
+            </Content>   
           </EditorDiv>
         </SetAuxiliaryLine.Provider>
       </AuxiliaryLine.Provider>

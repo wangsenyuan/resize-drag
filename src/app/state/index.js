@@ -12,7 +12,7 @@ export const CONTROLE_TYPES = {
 
 const initState = {
   layout: {
-    rows: Array(100).fill(60),
+    rows: Array(100).fill(26),
     columns: Array(26).fill(100),
   },
   container: {

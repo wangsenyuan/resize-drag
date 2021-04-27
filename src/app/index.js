@@ -1,4 +1,6 @@
 import React from "react";
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 import Toolbar from "./toolbar";
 import Editor from "./editor";
 import ErrorBoundary from "@/components/error-boundary";
@@ -24,6 +26,7 @@ const EditorDiv = styled(FullDiv)`
   .sidebar {
     flex: 0 0 auto;
     width: 100px;
+    box-shadow: 0 0px 1px #333;
   }
 
   .editor {
@@ -34,18 +37,20 @@ const EditorDiv = styled(FullDiv)`
 
 const App = () => {
   const { state, context } = createPrintState();
-
+  console.log(state)
   return (
     <ErrorBoundary>
-      <SetStateContext.Provider value={context}>
-        <AppDiv className="main-container">
-          <Toolbar className="toolbar" />
-          <EditorDiv className="editor-wrapper">
-            <Sidebar className="sidebar" />
-            <Editor className="editor" state={state} />
-          </EditorDiv>
-        </AppDiv>
-      </SetStateContext.Provider>
+      <DndProvider backend={HTML5Backend}>
+        <SetStateContext.Provider value={context}>
+          <AppDiv className="main-container">
+            <Toolbar className="toolbar" />
+            <EditorDiv className="editor-wrapper">
+              <Sidebar className="sidebar" />
+              <Editor className="editor" state={state} />
+            </EditorDiv>
+          </AppDiv>
+        </SetStateContext.Provider>
+      </DndProvider>
     </ErrorBoundary>
   );
 };

@@ -11,7 +11,9 @@ const PaperDiv = styled(FullDiv)`
 `;
 
 function Page() {
-  return <PaperDiv></PaperDiv>;
+  return (
+    <PaperDiv></PaperDiv>
+  )
 }
 
 export default Page;

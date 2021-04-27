@@ -70,7 +70,9 @@ export const getElementOffset = (elem, level = -1) => {
     level--;
   }
 
-  console.log("getElementOffset end");
-
   return { offsetTop, offsetLeft };
 };
+
+export function getAsMapKey(x1, y1, x2, y2) {
+  return `${x1}-${y1}-${x2}-${y2}`
+}

@@ -15,6 +15,7 @@ const initState = {
     rows: Array(100).fill(26),
     columns: Array(26).fill(100),
   },
+  filled: new Map(),
   container: {
     key: "root",
     type: CONTROLE_TYPES.CONTAINER,

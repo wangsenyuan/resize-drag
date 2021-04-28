@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import FullDiv from "@/components/full-div";
+import { useGetStateContext } from "../../../state";
+import Control from "./controls";
 
 const PaperDiv = styled(FullDiv)`
   position: absolute;
@@ -11,9 +13,13 @@ const PaperDiv = styled(FullDiv)`
 `;
 
 function Page() {
+  const printObjectState = useGetStateContext();
+
   return (
-    <PaperDiv></PaperDiv>
-  )
+    <PaperDiv>
+      <Control control={printObjectState.container} />
+    </PaperDiv>
+  );
 }
 
 export default Page;

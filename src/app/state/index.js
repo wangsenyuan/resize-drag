@@ -12,12 +12,12 @@ export const CONTROLE_TYPES = {
 
 const initState = {
   layout: {
-    rows: Array(100).fill(26),
+    rows: Array(100).fill(30),
     columns: Array(26).fill(100),
   },
   filled: new Map(),
   container: {
-    key: "root",
+    defKey: "root",
     type: CONTROLE_TYPES.CONTAINER,
     properties: {
       x1: 0,
@@ -25,7 +25,67 @@ const initState = {
       x2: 26,
       y2: 100,
     },
-    children: [],
+    children: [
+      {
+        defKey: "a",
+        type: CONTROLE_TYPES.CONTAINER,
+        properties: { x1: 1, y1: 2, x2: 10, y2: 10, backgroundColor: "yellow" },
+        children: [
+          {
+            defKey: "a1",
+            type: CONTROLE_TYPES.LABEL,
+            label: "标签",
+            properties: {
+              x1: 2,
+              y1: 3,
+              x2: 4,
+              y2: 3,
+            },
+          },
+          {
+            defKey: "a2",
+            type: CONTROLE_TYPES.CONTAINER,
+            properties: {
+              x1: 6,
+              y1: 4,
+              x2: 9,
+              y2: 7,
+              backgroundColor: "red",
+            },
+            children: [
+              {
+                defKey: "a21",
+                type: CONTROLE_TYPES.LABEL,
+                label: "标签a21",
+                properties: {
+                  x1: 6,
+                  y1: 4,
+                  x2: 6,
+                  y2: 5,
+                },
+              },
+              {
+                defKey: "a22",
+                type: CONTROLE_TYPES.LABEL,
+                label: "标签a22",
+                properties: {
+                  x1: 9,
+                  y1: 7,
+                  x2: 9,
+                  y2: 7,
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        defKey: "b",
+        type: CONTROLE_TYPES.LABEL,
+        label: "这是一个label",
+        properties: { x1: 2, y1: 12, x2: 10, y2: 12, backgroundColor: "green" },
+      },
+    ],
   },
 };
 // children are also controls,
@@ -99,4 +159,10 @@ export const SetStateContext = React.createContext({});
 
 export const useSetStateContext = () => {
   return useContext(SetStateContext);
+};
+
+export const GetStateContext = React.createContext({});
+
+export const useGetStateContext = () => {
+  return useContext(GetStateContext);
 };

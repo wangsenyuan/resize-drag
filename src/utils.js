@@ -74,5 +74,19 @@ export const getElementOffset = (elem, level = -1) => {
 };
 
 export function getAsMapKey(x1, y1, x2, y2) {
-  return `${x1}-${y1}-${x2}-${y2}`
+  return `${x1}-${y1}-${x2}-${y2}`;
 }
+
+export function getViewRect(widths, heights, x1, y1, x2, y2) {
+  x1 = max(x1, 1);
+  y1 = max(y1, 1);
+  x2 = min(x2, widths.length - 1);
+  y2 = min(y2, heights.length - 1);
+  let offsetY = heights[y1 - 1];
+  let offsetX = widths[x1 - 1];
+  let height = heights[y2] - offsetY;
+  let width = widths[x2] - offsetX;
+  return { offsetX, offsetY, width, height };
+}
+
+export function getPosition(widths, heights, top, left, width, height) {}

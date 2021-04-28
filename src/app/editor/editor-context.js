@@ -1,6 +1,7 @@
 import React, { useMemo, useContext, useState } from "react";
 export const AuxiliaryLine = React.createContext({});
 export const SetAuxiliaryLine = React.createContext({});
+import { partialSum, last } from "@/utils";
 
 export const createAuxiliaryLineContext = () => {
   const [state, setState] = useState({
@@ -26,9 +27,11 @@ export const ViewBoxContext = React.createContext({});
 
 export function createViewBox(rows, columns) {
   const viewBox = useMemo(() => {
-    let width = columns.reduce((a, b) => a + b, 0);
-    let height = rows.reduce((a, b) => a + b, 0);
-    return { width, height, rows, columns };
+    let widths = partialSum(0, columns);
+    let heights = partialSum(0, rows);
+    let width = last(widths);
+    let height = last(heights);
+    return { width, height, rows, columns, widths, heights };
   }, [rows, columns]);
 
   return viewBox;

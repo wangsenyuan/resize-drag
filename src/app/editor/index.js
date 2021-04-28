@@ -16,7 +16,8 @@ import styled from "styled-components";
 
 import AuxiliaryLinePage from "./auxiliary-lines";
 
-import Dustbin from '../dragBox/targetBox';
+import Dustbin from "../dragBox/targetBox";
+import { useGetStateContext } from "../state";
 
 const row_number_width = 50;
 const col_number_height = 40;
@@ -79,7 +80,8 @@ const TopLeft = styled.div`
   border: 1px solid black;
 `;
 
-function Editor({ className, state }) {
+function Editor({ className }) {
+  const state = useGetStateContext();
   const { layout } = state;
   const viewBox = createViewBox(layout.rows, layout.columns);
   const auxiliaryLine = createAuxiliaryLineContext();
@@ -97,7 +99,7 @@ function Editor({ className, state }) {
             <Content className="content-wraper">
               <Rows rows={layout.rows} className="row-numbers" />
               <Layers className="content" />
-            </Content>   
+            </Content>
           </EditorDiv>
         </SetAuxiliaryLine.Provider>
       </AuxiliaryLine.Provider>

@@ -1,11 +1,11 @@
 import React from "react";
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import Toolbar from "./toolbar";
 import Editor from "./editor";
 import ErrorBoundary from "@/components/error-boundary";
 import FullDiv from "@/components/full-div";
-import { createPrintState, SetStateContext } from "./state";
+import { createPrintState, SetStateContext, GetStateContext } from "./state";
 import styled from "styled-components";
 import Sidebar from "./sidebar";
 
@@ -37,19 +37,21 @@ const EditorDiv = styled(FullDiv)`
 
 const App = () => {
   const { state, context } = createPrintState();
-  console.log(state)
+
   return (
     <ErrorBoundary>
       <DndProvider backend={HTML5Backend}>
-        <SetStateContext.Provider value={context}>
-          <AppDiv className="main-container">
-            <Toolbar className="toolbar" />
-            <EditorDiv className="editor-wrapper">
-              <Sidebar className="sidebar" />
-              <Editor className="editor" state={state} />
-            </EditorDiv>
-          </AppDiv>
-        </SetStateContext.Provider>
+        <GetStateContext.Provider value={state}>
+          <SetStateContext.Provider value={context}>
+            <AppDiv className="main-container">
+              <Toolbar className="toolbar" />
+              <EditorDiv className="editor-wrapper">
+                <Sidebar className="sidebar" />
+                <Editor className="editor" />
+              </EditorDiv>
+            </AppDiv>
+          </SetStateContext.Provider>
+        </GetStateContext.Provider>
       </DndProvider>
     </ErrorBoundary>
   );

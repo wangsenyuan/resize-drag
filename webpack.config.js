@@ -76,6 +76,7 @@ let config = {
     alias: {
       appEnv: resolve("src/env/" + process.env.NODE_ENV + ".js"),
       "@": resolve("src"),
+      "@app": resolve("src/app"),
     },
   },
 };

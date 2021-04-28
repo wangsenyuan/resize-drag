@@ -1,7 +1,9 @@
-import React, { useMemo } from "react";
-import { useViewBox } from "../../../editor-context";
+import React, { useCallback, useMemo } from "react";
+import { useViewBox, useGetEditorOffsetContext } from "../../../editor-context";
 import { getViewRect, px } from "@/utils";
-import { CONTROLE_TYPES } from "../../../../state";
+import { CONTROLE_TYPES, useSetStateContext } from "@app/state";
+import { useDrop } from "react-dnd";
+import { ItemTypes } from "@app/dnd/item-types";
 
 function useRectProperties(properties, parentOffset) {
   const viewBox = useViewBox();
@@ -44,11 +46,49 @@ function useRectProperties(properties, parentOffset) {
   return style;
 }
 
+function parentContainer(parentKey, childKey) {
+  // if (!childKey.startsWith(parentKey)) {
+  //   return false;
+  // }
+  // let x = childKey.indexOf(parentKey.length);
+  // if (x !== ".") {
+  //   return false;
+  // }
+  return true;
+}
+
 function Container({ control, parentOffset }) {
-  let { children, properties } = control;
+  let { children, properties, key } = control;
   const style = useRectProperties(properties, parentOffset);
+
+  const setStateContext = useSetStateContext();
+
+  const handleDrop = useCallback(() => {}, [setStateContext]);
+
+  const getEditorOffset = useGetEditorOffsetContext();
+
+  const [, dropRef] = useDrop(
+    {
+      accept: [ItemTypes.CONTAINER, ItemTypes.FIELD, ItemTypes.LABEL],
+      canDrop: (item, monitor) => parentContainer(key, item.key),
+      drop: (item, monitor) => {
+        if (monitor.didDrop()) {
+          return monitor.getDropResult();
+        }
+      },
+      hover: (item, monitor) => {
+        if (monitor.isOver({ shallow: true })) {
+          let { x, y } = monitor.getClientOffset();
+          let { x: nx, y: ny } = getEditorOffset(x, y);
+          console.log(`hove at x = ${x} y = ${y} nx = ${nx} ny = ${ny}`);
+        }
+      },
+    },
+    [key]
+  );
+
   return (
-    <div style={style}>
+    <div style={style} ref={dropRef}>
       {children?.map((child) => (
         <Control
           key={child.defKey}

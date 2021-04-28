@@ -46,3 +46,8 @@ export const AuxliiaryLineDirs = {
   vertical: 1,
   none: -1,
 };
+
+export const GetEditorOffsetContext = React.createContext({});
+
+export const useGetEditorOffsetContext = () =>
+  useContext(GetEditorOffsetContext);

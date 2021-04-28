@@ -4,7 +4,7 @@ import ItemTypes from './itemTypes';
 import { preViewImage } from './preViewImg';
 
 const style = {
-  cursor: 'move',
+  cursor: "move",
 };
 
 const SourceBox = memo(function SourceBox({ children, acceptType, type }) {
@@ -13,7 +13,7 @@ const SourceBox = memo(function SourceBox({ children, acceptType, type }) {
     item: { type },
 
     spec: {
-      begin: monitor => {
+      begin: (monitor) => {
         // console.log(monitor)
       },
     },
@@ -26,7 +26,7 @@ const SourceBox = memo(function SourceBox({ children, acceptType, type }) {
       isDragging: monitor.isDragging(),
       handlerId: monitor.getHandlerId(),
     }),
-  }))
+  }));
 
   const opacity = isDragging ? 0.4 : 1;
 
@@ -38,6 +38,6 @@ const SourceBox = memo(function SourceBox({ children, acceptType, type }) {
       </div>
     </>
   );
-})
+});
 
 export default SourceBox;

@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Grid from "./grid";
 import Paper from "./paper";
 import styled from "styled-components";
 import FullDiv from "@/components/full-div";
-import { useViewBox } from "../editor-context";
+import { useViewBox, GetEditorOffsetContext } from "../editor-context";
 import { px } from "@/utils";
 import { scrollEditor } from "../events";
 
@@ -35,15 +35,45 @@ function Layers({ className }) {
     }
   }, [layersRef]);
 
+  const divRef = useRef(null);
+
+  const [initialOffset, setInitialOffset] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (divRef.current) {
+      let rect = divRef.current.getBoundingClientRect();
+      setInitialOffset({ top: rect.top, left: rect.left });
+    }
+  }, [divRef.current, setInitialOffset]);
+
+  /**
+   * this method is used to get the coordinates (x, y) regarding to the editor workspace
+   */
+  const getEditorOffset = useCallback(
+    (x, y) => {
+      if (!divRef.current) {
+        return { x, y };
+      }
+      let rect = divRef.current.getBoundingClientRect();
+      let offsetX = initialOffset.left - rect.left;
+      let offsetY = initialOffset.top - rect.top;
+      return { x: x + offsetX, y: y + offsetY };
+    },
+    [divRef.current, initialOffset]
+  );
+
   return (
     <LayersPage className={`${className ?? ""}`} ref={layersRef}>
-      <div
-        className="layers"
-        style={{ width: px(viewBox.width), height: px(viewBox.height) }}
-      >
-        <Grid />
-        <Paper />
-      </div>
+      <GetEditorOffsetContext.Provider value={getEditorOffset}>
+        <div
+          ref={divRef}
+          className="layers"
+          style={{ width: px(viewBox.width), height: px(viewBox.height) }}
+        >
+          <Grid />
+          <Paper />
+        </div>
+      </GetEditorOffsetContext.Provider>
     </LayersPage>
   );
 }

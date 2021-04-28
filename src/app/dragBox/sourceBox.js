@@ -1,13 +1,14 @@
 import React, { memo, useState } from 'react';
-import { useDrag } from 'react-dnd';
+import { useDrag, DragPreviewImage } from 'react-dnd';
 import ItemTypes from './itemTypes';
+import { preViewImage } from './preViewImg';
 
 const style = {
   cursor: 'move',
 };
 
 const SourceBox = memo(function SourceBox({ children, acceptType, type }) {
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: ItemTypes.BOX,
     item: { type },
 
@@ -20,7 +21,6 @@ const SourceBox = memo(function SourceBox({ children, acceptType, type }) {
       console.log(monitor.getItem())
       console.log(monitor)
       console.log(dropResult)
-      // console.log(dropResult, monitor)
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -31,9 +31,12 @@ const SourceBox = memo(function SourceBox({ children, acceptType, type }) {
   const opacity = isDragging ? 0.4 : 1;
 
   return (
-    <div ref={drag} role="Box" style={{ ...style, opacity }} data-testid={`box-${type}`}>
-			{children}
-		</div>
+    <>
+      <DragPreviewImage connect={preview} src={preViewImage}/>
+      <div ref={drag} role="Box" style={{ ...style, opacity }} data-testid={`box-${type}`}>
+        {children}
+      </div>
+    </>
   );
 })
 

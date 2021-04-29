@@ -1,8 +1,7 @@
-import React, { memo, useEffect } from "react";
-import { useDrag } from "react-dnd";
-import { getEmptyImage } from "react-dnd-html5-backend";
-import { CONTROLE_TYPES } from "@app/state";
-import { getRandomString } from "@/utils";
+import React, { memo, useState } from 'react';
+import { useDrag, DragPreviewImage } from 'react-dnd';
+import ItemTypes from './itemTypes';
+import { preViewImage } from './preViewImg';
 
 const style = {
   cursor: "move",
@@ -10,17 +9,18 @@ const style = {
 
 const SourceBox = memo(function SourceBox({ children, acceptType, type }) {
   const [{ isDragging }, drag, preview] = useDrag(() => ({
-    type: CONTROLE_TYPES.LABEL,
-    item: () => {
-      return {
-        type: CONTROLE_TYPES.LABEL,
-        key: "1",
-        defKey: getRandomString(),
-      };
+    type: ItemTypes.BOX,
+    item: { type },
+
+    spec: {
+      begin: (monitor) => {
+        // console.log(monitor)
+      },
     },
     end: (dropResult, monitor) => {
-      console.log("drag end");
-      // console.log(dropResult, monitor)
+      console.log(monitor.getItem())
+      console.log(monitor)
+      console.log(dropResult)
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -35,14 +35,12 @@ const SourceBox = memo(function SourceBox({ children, acceptType, type }) {
   }, []);
 
   return (
-    <div
-      ref={drag}
-      role="Box"
-      style={{ ...style, opacity }}
-      data-testid={`box-${type}`}
-    >
-      {children}
-    </div>
+    <>
+      <DragPreviewImage connect={preview} src={preViewImage}/>
+      <div ref={drag} role="Box" style={{ ...style, opacity }} data-testid={`box-${type}`}>
+        {children}
+      </div>
+    </>
   );
 });
 

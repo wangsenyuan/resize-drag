@@ -40,7 +40,7 @@ const App = () => {
 
   return (
     <ErrorBoundary>
-      <DndProvider backend={HTML5Backend}>
+      <DndProvider backend={HTML5Backend} debugMode={true}>
         <GetStateContext.Provider value={state}>
           <SetStateContext.Provider value={context}>
             <AppDiv className="main-container">

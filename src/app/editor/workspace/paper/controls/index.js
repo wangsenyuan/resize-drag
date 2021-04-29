@@ -11,18 +11,26 @@ function Container({ control, parentOffset }) {
   let { children, properties, key } = control;
   const style = useRectProperties(properties, parentOffset);
 
-  const [, dropRef] = useDrop(() => {
-    console.log("useDrop options");
-    return {
-      accept: [ControlTypes.LABEL, ControlTypes.CONTAINER],
+  const [, dropRef] = useDrop(
+    {
+      accept: [ControlTypes.CONTAINER, ControlTypes.FIELD, ControlTypes.LABEL],
+      canDrop: (item, monitor) => parentContainer(key, item.key),
       drop: (item, monitor) => {
         if (monitor.didDrop()) {
           return monitor.getDropResult();
         }
-        console.log("drop called");
+        console.log("drop");
       },
-    };
-  }, []);
+      hover: (item, monitor) => {
+        if (monitor.isOver({ shallow: true })) {
+          let { x, y } = monitor.getClientOffset();
+          // let { x: nx, y: ny } = getEditorOffset(x, y);
+          // console.log(`hove at x = ${x} y = ${y} nx = ${nx} ny = ${ny}`);
+        }
+      },
+    },
+    [key]
+  );
 
   return (
     <div style={style} ref={dropRef}>

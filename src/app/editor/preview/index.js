@@ -7,6 +7,7 @@ import { useDragLayer } from "react-dnd";
 
 const PageDiv = styled.div`
   position: absolute;
+  pointer-events: 'none',
   top: 0;
   bottom: 0;
   left: 0;

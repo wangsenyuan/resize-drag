@@ -1,7 +1,7 @@
 import React, { useMemo, useContext, useState } from "react";
 export const AuxiliaryLine = React.createContext({});
 export const SetAuxiliaryLine = React.createContext({});
-import { partialSum, last } from "@/utils";
+import { partialSum, last, getViewRect, px } from "@/utils";
 
 export const createAuxiliaryLineContext = () => {
   const [state, setState] = useState({
@@ -47,7 +47,6 @@ export const AuxliiaryLineDirs = {
   none: -1,
 };
 
-export const GetEditorOffsetContext = React.createContext({});
+export const WorkspaceContext = React.createContext({});
 
-export const useGetEditorOffsetContext = () =>
-  useContext(GetEditorOffsetContext);
+export const useWorkspace = () => useContext(WorkspaceContext);

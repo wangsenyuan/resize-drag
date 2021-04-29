@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import randomString from "random-string";
 
 export function max(a, b) {
   if (a >= b) {
@@ -89,4 +90,6 @@ export function getViewRect(widths, heights, x1, y1, x2, y2) {
   return { offsetX, offsetY, width, height };
 }
 
-export function getPosition(widths, heights, top, left, width, height) {}
+export function getRandomString() {
+  return randomString({ length: 20 });
+}

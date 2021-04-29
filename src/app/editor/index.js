@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 
-import Layers from "./layers";
+import Workspace from "./workspace";
 import FullDiv from "@/components/full-div";
 import {
   createViewBox,
@@ -8,6 +8,7 @@ import {
   AuxiliaryLine,
   SetAuxiliaryLine,
   createAuxiliaryLineContext,
+  WorkspaceContext,
 } from "./editor-context";
 
 import Columns from "./column-numbers";
@@ -16,7 +17,6 @@ import styled from "styled-components";
 
 import AuxiliaryLinePage from "./auxiliary-lines";
 
-import Dustbin from "../dragBox/targetBox";
 import { useGetStateContext } from "../state";
 
 const row_number_width = 50;
@@ -86,21 +86,52 @@ function Editor({ className }) {
   const viewBox = createViewBox(layout.rows, layout.columns);
   const auxiliaryLine = createAuxiliaryLineContext();
 
+  const workspaceRef = useRef();
+
+  const [initialOffset, setInitialOffset] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (workspaceRef?.current) {
+      let rect = workspaceRef.current.getBoundingClientRect();
+      setInitialOffset({ top: rect.top, left: rect.left });
+    }
+  }, [workspaceRef.current, setInitialOffset]);
+
+  /**
+   * this method is used to get the coordinates (x, y) regarding to the editor workspace
+   */
+  const getWorkspaceCoord = useCallback(
+    (x, y) => {
+      if (!workspaceRef.current) {
+        return { x, y };
+      }
+      let rect = workspaceRef.current.getBoundingClientRect();
+      let offsetX = initialOffset.left - rect.left;
+      let offsetY = initialOffset.top - rect.top;
+      return { x: x + offsetX, y: y + offsetY };
+    },
+    [workspaceRef.current, initialOffset]
+  );
+
   return (
     <ViewBoxContext.Provider value={viewBox}>
       <AuxiliaryLine.Provider value={auxiliaryLine.state}>
         <SetAuxiliaryLine.Provider value={auxiliaryLine.context}>
-          <EditorDiv className={`${className ?? ""} editor `}>
-            <AuxiliaryLinePage className="auxiliary-line-wraper" />
-            <Header className="header-wraper">
-              <TopLeft />
-              <Columns columns={layout.columns} className="header-columns" />
-            </Header>
-            <Content className="content-wraper">
-              <Rows rows={layout.rows} className="row-numbers" />
-              <Layers className="content" />
-            </Content>
-          </EditorDiv>
+          <WorkspaceContext.Provider
+            value={{ getWorkspaceCoord, offset: initialOffset }}
+          >
+            <EditorDiv className={`${className ?? ""} editor `}>
+              <AuxiliaryLinePage className="auxiliary-line-wraper" />
+              <Header className="header-wraper">
+                <TopLeft />
+                <Columns columns={layout.columns} className="header-columns" />
+              </Header>
+              <Content className="content-wraper">
+                <Rows rows={layout.rows} className="row-numbers" />
+                <Workspace className="content" ref={workspaceRef} />
+              </Content>
+            </EditorDiv>
+          </WorkspaceContext.Provider>
         </SetAuxiliaryLine.Provider>
       </AuxiliaryLine.Provider>
     </ViewBoxContext.Provider>

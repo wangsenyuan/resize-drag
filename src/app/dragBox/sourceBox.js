@@ -1,25 +1,25 @@
-import React, { memo, useState } from "react";
+import React, { memo, useEffect } from "react";
 import { useDrag } from "react-dnd";
-import { ItemTypes } from "@app/dnd/item-types";
+import { getEmptyImage } from "react-dnd-html5-backend";
+import { CONTROLE_TYPES } from "@app/state";
+import { getRandomString } from "@/utils";
 
 const style = {
   cursor: "move",
 };
 
 const SourceBox = memo(function SourceBox({ children, acceptType, type }) {
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: ItemTypes.LABEL,
-    item: { type },
-
-    spec: {
-      begin: (monitor) => {
-        // console.log(monitor)
-      },
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
+    type: CONTROLE_TYPES.LABEL,
+    item: () => {
+      return {
+        type: CONTROLE_TYPES.LABEL,
+        key: "1",
+        defKey: getRandomString(),
+      };
     },
     end: (dropResult, monitor) => {
-      console.log(monitor.getItem());
-      console.log(monitor);
-      console.log(dropResult);
+      console.log("drag end");
       // console.log(dropResult, monitor)
     },
     collect: (monitor) => ({
@@ -29,6 +29,10 @@ const SourceBox = memo(function SourceBox({ children, acceptType, type }) {
   }));
 
   const opacity = isDragging ? 0.4 : 1;
+
+  useEffect(() => {
+    preview(getEmptyImage(), { captureDraggingState: true });
+  }, []);
 
   return (
     <div

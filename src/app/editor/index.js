@@ -17,14 +17,10 @@ import { EditorDiv, Header, TopLeft, Content } from "./components";
 
 import AuxiliaryLinePage from "./auxiliary-lines";
 
-import { useGetStateContext } from "../state";
+import { useGetStateContext } from "@app/state";
+import Preview from "./preview";
 
-function Editor({ className }) {
-  const state = useGetStateContext();
-  const { layout } = state;
-  const viewBox = createViewBox(layout.rows, layout.columns);
-  const auxiliaryLine = createAuxiliaryLineContext();
-
+function createWorkspace() {
   const workspaceRef = useRef();
 
   const [initialOffset, setInitialOffset] = useState({ top: 0, left: 0 });
@@ -32,14 +28,19 @@ function Editor({ className }) {
   useEffect(() => {
     if (workspaceRef?.current) {
       let rect = workspaceRef.current.getBoundingClientRect();
-      setInitialOffset({ top: rect.top, left: rect.left });
+      setInitialOffset({
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+      });
     }
   }, [workspaceRef.current, setInitialOffset]);
 
   /**
    * this method is used to get the coordinates (x, y) regarding to the editor workspace
    */
-  const getWorkspaceCoord = useCallback(
+  const getWorkspaceCoords = useCallback(
     (x, y) => {
       if (!workspaceRef.current) {
         return { x, y };
@@ -52,13 +53,30 @@ function Editor({ className }) {
     [workspaceRef.current, initialOffset]
   );
 
+  const withIn = useCallback(
+    (x, y) => {
+      let { top, left, width, height } = initialOffset;
+      return x >= left && x <= left + width && y >= top && y <= left + height;
+    },
+    [initialOffset]
+  );
+
+  return [workspaceRef, { getWorkspaceCoords, offset: initialOffset, withIn }];
+}
+
+function Editor({ className }) {
+  const state = useGetStateContext();
+  const { layout } = state;
+  const viewBox = createViewBox(layout.rows, layout.columns);
+  const auxiliaryLine = createAuxiliaryLineContext();
+
+  const [workspaceRef, workspaceContext] = createWorkspace();
+
   return (
     <ViewBoxContext.Provider value={viewBox}>
       <AuxiliaryLine.Provider value={auxiliaryLine.state}>
         <SetAuxiliaryLine.Provider value={auxiliaryLine.context}>
-          <WorkspaceContext.Provider
-            value={{ getWorkspaceCoord, offset: initialOffset }}
-          >
+          <WorkspaceContext.Provider value={workspaceContext}>
             <EditorDiv className={`${className ?? ""} editor `}>
               <AuxiliaryLinePage className="auxiliary-line-wraper" />
               <Header className="header-wraper">
@@ -69,6 +87,7 @@ function Editor({ className }) {
                 <Rows rows={layout.rows} className="row-numbers" />
                 <Workspace className="content" ref={workspaceRef} />
               </Content>
+              <Preview />
             </EditorDiv>
           </WorkspaceContext.Provider>
         </SetAuxiliaryLine.Provider>

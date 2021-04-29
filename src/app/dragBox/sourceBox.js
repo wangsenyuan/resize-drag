@@ -1,7 +1,8 @@
-import React, { memo, useState } from 'react';
-import { useDrag, DragPreviewImage } from 'react-dnd';
-import ItemTypes from './itemTypes';
-import { preViewImage } from './preViewImg';
+import React, { memo, useEffect } from "react";
+import { useDrag, DragPreviewImage } from "react-dnd";
+import ItemTypes from "./itemTypes";
+import { preViewImage } from "./preViewImg";
+import { getEmptyImage } from "react-dnd-html5-backend";
 
 const style = {
   cursor: "move",
@@ -18,9 +19,7 @@ const SourceBox = memo(function SourceBox({ children, acceptType, type }) {
       },
     },
     end: (dropResult, monitor) => {
-      console.log(monitor.getItem())
-      console.log(monitor)
-      console.log(dropResult)
+      console.log("end drag");
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -36,8 +35,12 @@ const SourceBox = memo(function SourceBox({ children, acceptType, type }) {
 
   return (
     <>
-      <DragPreviewImage connect={preview} src={preViewImage}/>
-      <div ref={drag} role="Box" style={{ ...style, opacity }} data-testid={`box-${type}`}>
+      <div
+        ref={drag}
+        role="Box"
+        style={{ ...style, opacity }}
+        data-testid={`box-${type}`}
+      >
         {children}
       </div>
     </>

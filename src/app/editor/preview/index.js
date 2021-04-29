@@ -3,10 +3,7 @@ import FullDiv from "@/components/full-div";
 import styled from "styled-components";
 import { CONTROLE_TYPES } from "@app/state";
 import { binarySearch, getViewRect } from "@/utils";
-import { useViewBox } from "../editor-context";
-import Control from "./preview-controls";
-import { useGetWorkspace } from "../workspace/workspace-context";
-import useEfficientDragLayer from "@app/dnd/efficient-drag-layer";
+import { useDragLayer } from "react-dnd";
 
 const PageDiv = styled.div`
   position: absolute;
@@ -88,60 +85,13 @@ function wrapOffset(control, offset, widths, heights) {
   return control;
 }
 
-function Preview({ item, currentOffset }) {
-  const workspace = useGetWorkspace();
-
-  if (currentOffset.x < workspace.offset.left) {
-    return null;
-  }
-
-  return <Preview2 item={item} currentOffset={currentOffset} />;
-}
-
-function stateReducer(state, { x, y, widths, heights }) {
-  console.log(`state reducer ${x} ${y}`);
-  let dx = x - state.left;
-  let dy = y - state.top;
-  return wrapOffset(state, { dx, dy }, widths, heights);
-}
-
-function Preview2({ item, currentOffset }) {
-  const viewBox = useViewBox();
-  const workspace = useGetWorkspace();
-  const [control, dispatch] = useReducer(
-    stateReducer,
-    {
-      item,
-      offset: currentOffset,
-      heights: viewBox.heights,
-      getWorkspaceOffset: workspace.getWorkspaceOffset,
-    },
-    createControl
-  );
-
-  useEffect(() => {
-    requestAnimationFrame(() =>
-      dispatch({
-        x: currentOffset.x,
-        y: currentOffset.y,
-        widths: viewBox.widths,
-        heights: viewBox.heights,
-      })
-    );
-  }, [currentOffset, viewBox, dispatch]);
-
-  return <Control control={control} />;
-}
-
 function PreviewLayer() {
-  const { isDragging, item, currentOffset } = useEfficientDragLayer(
-    (monitor) => ({
-      item: monitor.getItem(),
-      itemType: monitor.getItemType(),
-      currentOffset: monitor.getClientOffset(),
-      isDragging: monitor.isDragging(),
-    })
-  );
+  const { isDragging, item, currentOffset } = useDragLayer((monitor) => ({
+    item: monitor.getItem(),
+    itemType: monitor.getItemType(),
+    currentOffset: monitor.getClientOffset(),
+    isDragging: monitor.isDragging(),
+  }));
 
   if (!isDragging || !item || !currentOffset) {
     return null;
@@ -150,7 +100,7 @@ function PreviewLayer() {
   return (
     <PageDiv className="drag-preview-layer">
       <FullDiv>
-        <Preview item={item} currentOffset={currentOffset}></Preview>
+        <button>预览</button>
       </FullDiv>
     </PageDiv>
   );

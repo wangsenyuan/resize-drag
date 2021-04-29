@@ -14,28 +14,29 @@ function Container({ control, parentOffset }) {
 
   // const getEditorOffset = useGetWorkspaceOffset();
 
-  // const [, dropRef] = useDrop(
-  //   {
-  //     accept: [ItemTypes.CONTAINER, ItemTypes.FIELD, ItemTypes.LABEL],
-  //     canDrop: (item, monitor) => parentContainer(key, item.key),
-  //     drop: (item, monitor) => {
-  //       if (monitor.didDrop()) {
-  //         return monitor.getDropResult();
-  //       }
-  //     },
-  //     hover: (item, monitor) => {
-  //       if (monitor.isOver({ shallow: true })) {
-  //         let { x, y } = monitor.getClientOffset();
-  //         // let { x: nx, y: ny } = getEditorOffset(x, y);
-  //         // console.log(`hove at x = ${x} y = ${y} nx = ${nx} ny = ${ny}`);
-  //       }
-  //     },
-  //   },
-  //   [key]
-  // );
+  const [, dropRef] = useDrop(
+    {
+      accept: [ItemTypes.CONTAINER, ItemTypes.FIELD, ItemTypes.LABEL, "box"],
+      canDrop: (item, monitor) => parentContainer(key, item.key),
+      drop: (item, monitor) => {
+        if (monitor.didDrop()) {
+          return monitor.getDropResult();
+        }
+        console.log("drop called");
+      },
+      hover: (item, monitor) => {
+        if (monitor.isOver({ shallow: true })) {
+          let { x, y } = monitor.getClientOffset();
+          // let { x: nx, y: ny } = getEditorOffset(x, y);
+          // console.log(`hove at x = ${x} y = ${y} nx = ${nx} ny = ${ny}`);
+        }
+      },
+    },
+    [key]
+  );
 
   return (
-    <div style={style}>
+    <div style={style} ref={dropRef}>
       {children?.map((child) => (
         <Control
           key={child.defKey}

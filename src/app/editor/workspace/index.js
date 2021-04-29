@@ -6,6 +6,7 @@ import FullDiv from "@/components/full-div";
 import { useViewBox } from "../editor-context";
 import { px } from "@/utils";
 import { scrollEditor } from "../events";
+import Preview from "./preview";
 
 const LayersPage = styled(FullDiv)`
   overflow: auto;
@@ -43,6 +44,7 @@ function Workspace({ className }, divRef) {
       >
         <Grid />
         <Paper />
+        <Preview />
       </div>
     </LayersPage>
   );

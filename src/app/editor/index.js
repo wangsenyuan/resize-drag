@@ -18,7 +18,6 @@ import { EditorDiv, Header, TopLeft, Content } from "./components";
 import AuxiliaryLinePage from "./auxiliary-lines";
 
 import { useGetStateContext } from "@app/state";
-import Preview from "./preview";
 
 function createWorkspace() {
   const workspaceRef = useRef();
@@ -28,6 +27,7 @@ function createWorkspace() {
   useEffect(() => {
     if (workspaceRef?.current) {
       let rect = workspaceRef.current.getBoundingClientRect();
+      console.log(`workspace rect is ${JSON.stringify(rect)}`);
       setInitialOffset({
         top: rect.top,
         left: rect.left,
@@ -87,7 +87,6 @@ function Editor({ className }) {
                 <Rows rows={layout.rows} className="row-numbers" />
                 <Workspace className="content" ref={workspaceRef} />
               </Content>
-              <Preview />
             </EditorDiv>
           </WorkspaceContext.Provider>
         </SetAuxiliaryLine.Provider>

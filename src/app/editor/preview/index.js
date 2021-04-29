@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useState } from "react";
 import FullDiv from "@/components/full-div";
 import styled from "styled-components";
-import { CONTROLE_TYPES } from "@app/state";
+import { ControlTypes } from "@app/state";
 import { binarySearch, getViewRect } from "@/utils";
 import { useDragLayer } from "react-dnd";
 
@@ -20,11 +20,11 @@ function createControl({ item, offset, getWorkspaceOffset, heights }) {
   let j = binarySearch(heights.length, (j) => heights[j] > ny);
 
   let res = {};
-  if (item.type === CONTROLE_TYPES.LABEL) {
+  if (item.type === ControlTypes.LABEL) {
     // just return a label control
     res = {
       defKey: item.defKey,
-      type: CONTROLE_TYPES.LABEL,
+      type: ControlTypes.LABEL,
       top: ny,
       left: x,
       properties: {

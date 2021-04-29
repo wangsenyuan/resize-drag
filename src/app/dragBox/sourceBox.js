@@ -1,7 +1,5 @@
 import React, { memo, useEffect } from "react";
 import { useDrag, DragPreviewImage } from "react-dnd";
-import ItemTypes from "./itemTypes";
-import { preViewImage } from "./preViewImg";
 import { getEmptyImage } from "react-dnd-html5-backend";
 
 const style = {
@@ -10,7 +8,7 @@ const style = {
 
 const SourceBox = memo(function SourceBox({ children, acceptType, type }) {
   const [{ isDragging }, drag, preview] = useDrag(() => ({
-    type: ItemTypes.BOX,
+    type: type,
     item: { type },
 
     spec: {

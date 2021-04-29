@@ -4,7 +4,7 @@ import { useMemo } from "react";
 // 选中id，通过selectorFamily传递给其他组件；
 // 拖入的时候直接保存到后端，产生新的id；
 
-export const CONTROLE_TYPES = {
+export const ControlTypes = {
   CONTAINER: "container",
   FIELD: "field",
   LABEL: "label",
@@ -18,7 +18,7 @@ const initState = {
   filled: new Map(),
   container: {
     defKey: "root",
-    type: CONTROLE_TYPES.CONTAINER,
+    type: ControlTypes.CONTAINER,
     properties: {
       x1: 0,
       y1: 0,
@@ -28,12 +28,12 @@ const initState = {
     children: [
       {
         defKey: "a",
-        type: CONTROLE_TYPES.CONTAINER,
+        type: ControlTypes.CONTAINER,
         properties: { x1: 1, y1: 2, x2: 10, y2: 10, backgroundColor: "yellow" },
         children: [
           {
             defKey: "a1",
-            type: CONTROLE_TYPES.LABEL,
+            type: ControlTypes.LABEL,
             label: "标签",
             properties: {
               x1: 2,
@@ -44,7 +44,7 @@ const initState = {
           },
           {
             defKey: "a2",
-            type: CONTROLE_TYPES.CONTAINER,
+            type: ControlTypes.CONTAINER,
             properties: {
               x1: 6,
               y1: 4,
@@ -55,7 +55,7 @@ const initState = {
             children: [
               {
                 defKey: "a21",
-                type: CONTROLE_TYPES.LABEL,
+                type: ControlTypes.LABEL,
                 label: "标签a21",
                 properties: {
                   x1: 6,
@@ -66,7 +66,7 @@ const initState = {
               },
               {
                 defKey: "a22",
-                type: CONTROLE_TYPES.LABEL,
+                type: ControlTypes.LABEL,
                 label: "标签a22",
                 properties: {
                   x1: 9,
@@ -81,7 +81,7 @@ const initState = {
       },
       {
         defKey: "b",
-        type: CONTROLE_TYPES.LABEL,
+        type: ControlTypes.LABEL,
         label: "这是一个label",
         properties: { x1: 2, y1: 12, x2: 10, y2: 12, backgroundColor: "green" },
       },

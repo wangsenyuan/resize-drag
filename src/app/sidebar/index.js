@@ -1,13 +1,15 @@
 import React from "react";
 import SourceBox from "../dragBox/sourceBox";
-
+import { ControlTypes } from "@app/state";
 const originData = [
   {
-    type: "label",
+    id: 1,
+    type: ControlTypes.LABEL,
     background: "red",
   },
   {
-    type: "select",
+    id: 2,
+    type: ControlTypes.LABEL,
     background: "green",
   },
 ];
@@ -47,7 +49,7 @@ function Page({ className, data = originData }) {
       <div>打印对象</div>
       <div>
         {data.map((item) => (
-          <SourceBox type={item.type} key={item.type}>
+          <SourceBox type={item.type} key={item.id}>
             <div
               style={{
                 width: 100,

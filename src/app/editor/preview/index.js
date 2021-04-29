@@ -93,7 +93,7 @@ function PreviewLayer() {
     isDragging: monitor.isDragging(),
   }));
 
-  if (!isDragging || !item || !currentOffset) {
+  if (!isDragging) {
     return null;
   }
 

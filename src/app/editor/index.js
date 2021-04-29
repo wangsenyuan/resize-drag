@@ -87,7 +87,7 @@ function Editor({ className }) {
                 <Rows rows={layout.rows} className="row-numbers" />
                 <Workspace className="content" ref={workspaceRef} />
               </Content>
-              {/* <Preview /> */}
+              <Preview />
             </EditorDiv>
           </WorkspaceContext.Provider>
         </SetAuxiliaryLine.Provider>

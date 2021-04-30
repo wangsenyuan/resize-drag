@@ -52,7 +52,6 @@ const RowCell = styled.div`
   .header-row-label {
     height: calc(100%);
   }
-
   position: relative;
 
   div.bottom-line {

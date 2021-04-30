@@ -5,6 +5,7 @@ import { useMemo } from "react";
 // 拖入的时候直接保存到后端，产生新的id；
 
 export const ControlTypes = {
+  DUMMY: "dummy",
   CONTAINER: "container",
   FIELD: "field",
   LABEL: "label",

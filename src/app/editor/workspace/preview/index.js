@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useReducer, useState } from "react";
 import FullDiv from "@/components/full-div";
 import styled from "styled-components";
-import { binarySearch, getViewRect, px } from "@/utils";
+import { binarySearch, px } from "@/utils";
 import { useDragLayer } from "react-dnd";
 import { useViewBox, useWorkspace } from "@app/editor/editor-context";
+import Control from "./preview-controls";
 
 const PageDiv = styled.div`
   position: absolute;
@@ -12,6 +13,8 @@ const PageDiv = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
+
+  cursor: grabbing;
 `;
 
 function Preview1({ item, current }) {
@@ -27,33 +30,19 @@ function Preview2({ item, current }) {
   const viewBox = useViewBox();
   const workspace = useWorkspace();
 
-  const rect = useMemo(() => {
-    let { x, y } = current;
+  const control = useMemo(() => {
+    let { x, y } = workspace.getWorkspaceCoords(current.x, current.y);
     x -= workspace.offset.left;
     y -= workspace.offset.top;
     current = { x, y };
     // console.log(`current position is ${JSON.stringify(current)}`);
+    // console.log(`${JSON.stringify(item)}`);
     let control = createControl(item, current, viewBox);
     // console.log(`control ${JSON.stringify(control)}`);
-    let rect = findRect(control.properties, viewBox);
-    // console.log(`get rect ${JSON.stringify(rect)}`);
-    return rect;
+    return control;
   }, [item, current, viewBox]);
 
-  return (
-    <div
-      style={{
-        position: "absolute",
-        backgroundColor: "red",
-        top: px(rect.offsetY),
-        left: px(rect.offsetX),
-        width: px(rect.width),
-        height: px(rect.height),
-      }}
-    >
-      移动
-    </div>
-  );
+  return <Control control={control} />;
 }
 
 function floorValue(arr, v) {
@@ -67,14 +56,27 @@ function createControl(item, current, viewBox) {
   y = floorValue(viewBox.heights, y);
   let i = binarySearch(viewBox.widths.length, (i) => viewBox.widths[i] >= x);
   let j = binarySearch(viewBox.heights.length, (j) => viewBox.heights[j] >= y);
-  return Object.assign({}, item, {
-    properties: { x1: i, y1: j, x2: i + 1, y2: j },
-  });
+  let { properties } = item;
+  let { x1, y1 } = properties;
+  let dx = i - x1;
+  let dy = j - y1;
+
+  return applyOffset(item, dx, dy);
 }
 
-function findRect(properties, viewBox) {
+function applyOffset(item, dx, dy) {
+  let { children, properties } = item;
   let { x1, y1, x2, y2 } = properties;
-  return getViewRect(viewBox.widths, viewBox.heights, x1, y1, x2, y2);
+  x1 += dx;
+  y1 += dy;
+  x2 += dx;
+  y2 += dy;
+
+  children = children?.map((child) => applyOffset(child, dx, dy));
+
+  properties = Object.assign({}, properties, { x1, y1, x2, y2 });
+
+  return Object.assign({}, item, { children, properties });
 }
 
 function PreviewLayer() {

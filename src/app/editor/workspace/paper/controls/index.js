@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { useRectProperties } from "@app/editor/workspace/workspace-context";
 import { ControlTypes } from "@app/state";
+import ItemTypes from "@app/dnd/item-types";
 import { useDrop } from "react-dnd";
 
 function parentContainer(parentKey, childKey) {
@@ -13,7 +14,7 @@ function Container({ control, parentOffset }) {
 
   const [, dropRef] = useDrop(
     {
-      accept: [ControlTypes.CONTAINER, ControlTypes.FIELD, ControlTypes.LABEL],
+      accept: ItemTypes.CONTROL,
       canDrop: (item, monitor) => parentContainer(key, item.key),
       drop: (item, monitor) => {
         if (monitor.didDrop()) {

@@ -1,5 +1,5 @@
 export const ItemTypes = {
-  FIELD: "FIELD",
-  LABEL: "LABEL",
-  CONTAINER: "CONTAINER",
+  CONTROL: "control",
 };
+
+export default ItemTypes;

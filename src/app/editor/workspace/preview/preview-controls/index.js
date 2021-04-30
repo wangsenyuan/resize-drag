@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
-import { useRectProperties } from "../../workspace/workspace-context";
-import { CONTROLE_TYPES } from "@app/state";
+import React from "react";
+import { useRectProperties } from "../../workspace-context";
+import { ControlTypes } from "@app/state";
 
 function Container({ control, parentOffset }) {
   let { children, properties } = control;
@@ -29,13 +29,17 @@ function LableControl({ control, parentOffset }) {
 }
 
 function Control({ control, parentOffset }) {
-  console.log(`will render control ${JSON.stringify(control)}`);
-
-  if (control.type === CONTROLE_TYPES.CONTAINER) {
+  if (
+    control.type === ControlTypes.CONTAINER ||
+    control.type === ControlTypes.DUMMY
+  ) {
     return <Container control={control} parentOffset={parentOffset} />;
   }
 
-  if (control.type === CONTROLE_TYPES.LABEL) {
+  if (
+    control.type === ControlTypes.LABEL ||
+    control.type === ControlTypes.FIELD
+  ) {
     return <LableControl control={control} parentOffset={parentOffset} />;
   }
 

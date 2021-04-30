@@ -93,3 +93,10 @@ export function getViewRect(widths, heights, x1, y1, x2, y2) {
 export function getRandomString() {
   return randomString({ length: 20 });
 }
+
+export function isEmptyArray(arr) {
+  if (!Array.isArray(arr)) {
+    return true;
+  }
+  return arr.length === 0;
+}

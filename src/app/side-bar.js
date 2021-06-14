@@ -10,6 +10,9 @@ function Sidebar() {
             <Link to="/introduction">Introduction</Link>
           </li>
           <li>
+            <Link to="/report">Detailed Report</Link>
+          </li>
+          <li>
             <Link to="/servers">Servers</Link>
           </li>
           <li>
